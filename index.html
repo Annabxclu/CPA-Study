@@ -45,6 +45,7 @@ h3{font-size:17px}
 .g2{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
 .panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px}
 .sec-tile{text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .15s,border-color .15s;display:flex;flex-direction:column;gap:8px}
+.sec-tile.cur{border-color:var(--c);box-shadow:0 0 0 2px var(--c),var(--shadow)}
 .sec-tile:hover{transform:translateY(-2px);border-color:var(--c)}
 .sec-tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
 .sec-tile .code{font-family:var(--mono);font-weight:600;font-size:22px;color:var(--c)}
@@ -441,10 +442,11 @@ function applySecTheme(){
   }));
   const h=location.hash.replace('#','').toUpperCase();
   if(SECTIONS[h]) S.sec=h;
+  else if(SECTIONS[S.prefs.current]){S.sec=S.prefs.current;try{history.replaceState(null,'','#'+S.sec.toLowerCase());}catch(e){}}
   applySecTheme(); render();
   try{const sm=await claude.use('sample'); if(sm){S.sample=sm; try{S.sampleImages=!!(await sm.limits()).images;}catch(e){} if(!S.run) render();}}catch(e){}
 })();
-window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','').toUpperCase();if(S.run)return;S.sec=SECTIONS[h]?h:null;applySecTheme();render();});
+window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','').toUpperCase();if(S.run)return;S.sec=SECTIONS[h]?h:null;if(S.sec&&S.prefs.current!==S.sec){S.prefs.current=S.sec;savePrefs();}applySecTheme();render();});
 
 /* ---------------- Rendering ---------------- */
 function render(){
@@ -461,17 +463,19 @@ function afterRender(){
 
 function renderHome(){
   const st=streak(), today=S.prefs.log[dkey()]||0;
+  const cur=S.prefs.current;
   const tile=k=>{const s=SECTIONS[k],d=S.data[k],tot=d.cards.length,m=mastered(d),due=dueCards(d).length;
-    return `<button class="sec-tile" style="--c:${s.color}" data-act="open" data-sec="${k}">
-      <div class="row between"><span class="code">${k}</span>${due?`<span class="badge" style="background:${s.color}1c;color:${s.color}">${due} due</span>`:''}</div>
+    return `<button class="sec-tile ${k===cur?'cur':''}" style="--c:${s.color}" data-act="open" data-sec="${k}">
+      <div class="row between"><span class="row" style="gap:8px"><span class="code">${k}</span>${k===cur?`<span class="tag" style="background:${s.color};color:#fff">Studying now</span>`:''}</span>${due?`<span class="badge" style="background:${s.color}1c;color:${s.color}">${due} due</span>`:''}</div>
       <div class="nm">${s.name}</div>
       <div class="muted small">${s.blurb}</div>
       <div class="bar" style="margin-top:4px"><i style="width:${pct(m,tot)}%"></i></div>
       <div class="small muted">${m}/${tot} cards mastered · ${d.mcqs.length} questions</div></button>`;};
   return `<section class="hero">
     <div class="eyebrow">Your CPA study hub</div>
-    <h1>Pick the section you're studying.</h1>
-    <p>Each section keeps its own flashcards, questions, review schedule and progress, so you can focus on one at a time and come back to the others later.</p>
+    <h1>${cur?'Switch sections?':'Pick the section you\'re studying.'}</h1>
+    <p>${cur?`Tap a section to make it your current one. The app opens straight into it every time until you switch again.`:`The section you pick stays selected — the app opens straight into it every time until you switch. Each section keeps its own cards, review schedule and progress.`}</p>
+    ${cur?`<button class="btn primary" style="margin-top:14px;background:${SECTIONS[cur].color};border-color:${SECTIONS[cur].color}" data-act="open" data-sec="${cur}">← Back to ${cur}</button>`:''}
     <div class="row" style="margin-top:16px"><span class="chip">🔥 ${st}-day streak</span><span class="chip">${today} reviewed today</span>${S.prefs.pomos?`<span class="chip">◷ ${S.prefs.pomos} focus sessions</span>`:''}</div>
   </section>
   <div class="groupttl"><h2>Core</h2><span class="muted small">Everyone takes all three</span></div>
@@ -487,7 +491,7 @@ function storageNote(){
 function renderSection(){
   const s=SECTIONS[S.sec];
   return `<div class="sechead">
-    <button class="btn ghost sm" data-act="home" style="margin-left:-10px">← All sections</button>
+    <button class="btn ghost sm" data-act="home" style="margin-left:-10px">⇄ Switch section</button>
     <div class="row" style="margin-top:6px"><span class="code">${S.sec}</span><span class="tag">${s.kind}</span></div>
     <h1 style="font-size:clamp(24px,5vw,32px)">${s.name}</h1>
   </div>
@@ -1025,7 +1029,7 @@ document.addEventListener('click',async e=>{
   const a=b.dataset.act,r=S.run,d=S.sec?D():null;
   switch(a){
     case 'home': if(S.run)stopTimer(); S.run=null;S.sec=null;history.replaceState(null,'',location.pathname+location.search);applySecTheme();render();window.scrollTo(0,0);break;
-    case 'open': S.sec=b.dataset.sec;S.tab='study';S.q='';S.filter='all';location.hash=S.sec.toLowerCase();applySecTheme();render();window.scrollTo(0,0);break;
+    case 'open': S.sec=b.dataset.sec;if(S.prefs.current!==S.sec){S.prefs.current=S.sec;savePrefs();}S.tab='study';S.q='';S.filter='all';location.hash=S.sec.toLowerCase();applySecTheme();render();window.scrollTo(0,0);break;
     case 'tab': S.tab=b.dataset.tab;render();break;
     case 'filter': S.filter=b.dataset.f;render();break;
     case 'close': closeModal();break;
