@@ -160,6 +160,7 @@ label.f>span{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
 .empty{text-align:center;padding:40px 16px;color:var(--muted)}
 .note{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;margin-top:30px}
 .ai{white-space:pre-wrap;font-size:15px;line-height:1.55}
+.shot{display:flex;align-items:center;gap:10px;margin:-4px 0 12px;padding:10px;border:1.5px dashed var(--line);border-radius:12px}
 .check{display:flex;gap:10px;align-items:flex-start;padding:6px 0}
 .check input{margin-top:4px;width:auto}
 /* modal */
@@ -441,7 +442,7 @@ function applySecTheme(){
   const h=location.hash.replace('#','').toUpperCase();
   if(SECTIONS[h]) S.sec=h;
   applySecTheme(); render();
-  try{const sm=await claude.use('sample'); if(sm){S.sample=sm; if(!S.run) render();}}catch(e){}
+  try{const sm=await claude.use('sample'); if(sm){S.sample=sm; try{S.sampleImages=!!(await sm.limits()).images;}catch(e){} if(!S.run) render();}}catch(e){}
 })();
 window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','').toUpperCase();if(S.run)return;S.sec=SECTIONS[h]?h:null;applySecTheme();render();});
 
@@ -587,6 +588,7 @@ function topicField(val){const t=topics(D());return `<label class="f"><span>Topi
 
 function editCard(c){
   openModal(`<h2>${c?'Edit':'New'} flashcard</h2>
+    ${shotBar()}
     <label class="f"><span>Front — term or question</span><textarea id="fF" autofocus style="min-height:70px">${esc(c?.f)}</textarea></label>
     <label class="f"><span>Back — definition or answer</span><textarea id="fB">${esc(c?.b)}</textarea></label>
     ${topicField(c?.t)}
@@ -596,10 +598,12 @@ function editCard(c){
     if(c){c.f=f;c.b=b;c.t=t;}else D().cards.unshift(newCard(f,b,t));
     save(); if(more){editCard(null);$('#fT').value=t;toast('Saved');} else {closeModal();render();}};
   $('#saveC').onclick=()=>go(false); if($('#saveMore'))$('#saveMore').onclick=()=>go(true);
+  wireShot('card');
 }
 function editMcq(m){
   const ch=m?m.c.slice():['','','',''];while(ch.length<4)ch.push('');
   openModal(`<h2>${m?'Edit':'New'} multiple-choice question</h2>
+    ${shotBar()}
     <label class="f"><span>Question</span><textarea id="fQ" autofocus>${esc(m?.q)}</textarea></label>
     <div class="f"><span style="display:block;font-size:13px;font-weight:600;margin-bottom:5px">Choices — select the correct one</span>
     ${ch.map((x,i)=>`<div class="choicerow"><input type="radio" name="ans" value="${i}" ${m?(m.a===i?'checked':''):(i===0?'checked':'')}><input type="text" class="fC" placeholder="Choice ${'ABCDE'[i]}" value="${esc(x)}"></div>`).join('')}</div>
@@ -616,6 +620,104 @@ function editMcq(m){
     if(m)Object.assign(m,{q,c,a:na,x,t});else D().mcqs.unshift(newMcq(q,c,na,x,t));
     save(); if(more){editMcq(null);$('#fT').value=t;toast('Saved');} else {closeModal();render();}};
   $('#saveM').onclick=()=>go(false); if($('#saveMore'))$('#saveMore').onclick=()=>go(true);
+  wireShot('mc');
+}
+
+/* ---------- Fill from screenshot ---------- */
+function shotBar(){
+  return `<div class="shot"><button type="button" class="btn sm" id="shotBtn">📷 Fill from screenshot</button><span class="muted small hide-sm">or paste an image here</span><input type="file" id="shotIn" accept="image/*" hidden></div><div id="shotMsg" class="small muted" style="margin:-4px 0 10px"></div>`;
+}
+function wireShot(kind){
+  $('#shotBtn').onclick=()=>$('#shotIn').click();
+  $('#shotIn').onchange=e=>{const f=e.target.files[0];if(f)readShot(kind,f);e.target.value='';};
+  $('#sheet').onpaste=e=>{const it=[...(e.clipboardData?.items||[])].find(i=>i.type.startsWith('image/'));if(it){e.preventDefault();readShot(kind,it.getAsFile());}};
+}
+async function shrink(file){
+  try{const bm=await createImageBitmap(file);const k=Math.min(1,1800/Math.max(bm.width,bm.height));
+    const cv=document.createElement('canvas');cv.width=Math.round(bm.width*k);cv.height=Math.round(bm.height*k);
+    cv.getContext('2d').drawImage(bm,0,0,cv.width,cv.height);
+    return await new Promise(r=>cv.toBlob(b=>r(b||file),'image/jpeg',.9));}catch(e){return file;}
+}
+async function readShot(kind,file){
+  const msg=$('#shotMsg'),btn=$('#shotBtn');if(!msg)return;
+  btn.disabled=true;msg.style.color='';msg.textContent='Reading your screenshot…';
+  try{
+    const img=await shrink(file);
+    const out=(S.sample&&S.sampleImages)?await claudeShot(kind,img):await ocrShot(kind,img,msg);
+    if(!$('#shotMsg'))return;
+    if(kind==='mc'){
+      if(!out.question||!out.choices||out.choices.length<2)throw {message:'nothing found'};
+      $('#fQ').value=out.question;
+      const ins=[...document.querySelectorAll('.fC')];ins.forEach((el,i)=>el.value=out.choices[i]||'');
+      if(out.choices.length>ins.length)ins[ins.length-1].value=out.choices.slice(ins.length-1).join(' / ');
+      const radios=[...document.querySelectorAll('input[name=ans]')];
+      if(Number.isInteger(out.answer)&&radios[out.answer])radios[out.answer].checked=true;
+      if(out.explanation)$('#fX').value=out.explanation;
+      if(out.topic&&!$('#fT').value)$('#fT').value=out.topic;
+      msg.style.color=out.answerSource==='marked'?'var(--ok)':'var(--warn)';
+      msg.textContent=out.answerSource==='marked'?'✓ Filled in from your screenshot. Give it a quick check, then save.'
+        :out.answerSource==='solved'?'✓ Filled in. The screenshot didn\'t show the answer, so Claude chose it — double-check before saving.'
+        :'✓ Text filled in. Select the correct answer and fix any misread words before saving.';
+    }else{
+      if(!out.front)throw {message:'nothing found'};
+      $('#fF').value=out.front;$('#fB').value=out.back||'';
+      if(out.topic&&!$('#fT').value)$('#fT').value=out.topic;
+      msg.style.color='var(--ok)';msg.textContent='✓ Filled in from your screenshot. Check it, then save.';
+    }
+  }catch(e){
+    if(!$('#shotMsg'))return;
+    msg.style.color='var(--bad)';
+    msg.textContent=e&&e.code==='rate_limited'?'Too many requests — try again in a moment.':e&&e.code==='ocr_load'?'Couldn\'t load the text reader. Check your connection and try again.':'Couldn\'t read a question from that image. Try a tighter crop around the question and choices.';
+  }
+  if($('#shotBtn'))$('#shotBtn').disabled=false;
+}
+async function claudeShot(kind,img){
+  const prompt=kind==='mc'?`This image is a screenshot from CPA exam study material (section ${S.sec}: ${SECTIONS[S.sec].name}). Extract the FIRST multiple-choice question in it.
+Copy the question stem and each answer choice exactly as written (fix only broken line wraps). Leave out choice labels like "A." or "(b)". Include any table or figures in the stem as plain text.
+If the screenshot marks the correct answer (highlight, check mark, "correct" label, answer key), use it and set answerSource to "marked". Otherwise work out the correct answer yourself as an expert CPA tutor and set answerSource to "solved". If the screenshot shows an explanation, copy its key points; otherwise write a short one (max 50 words).
+Return ONLY JSON: {"question":"","choices":["",""],"answer":0,"answerSource":"marked","explanation":"","topic":"2-4 word topic"}`
+  :`This image is a screenshot from CPA exam study material (section ${S.sec}: ${SECTIONS[S.sec].name}). Turn it into ONE flashcard.
+front: the term, concept or question shown, copied as written. back: the definition or answer shown, copied as written; if none is shown, write a concise, accurate one (max 45 words).
+Return ONLY JSON: {"front":"","back":"","topic":"2-4 word topic"}`;
+  let v;
+  try{v=await S.sample.json(prompt,{images:[img],modelTier:'default'});}
+  catch(e){if(e&&(e.code==='rate_limited'||e.code==='not_granted'))throw e;const r=await S.sample(prompt,{images:[img],modelTier:'default'});v=JSON.parse(r.text.slice(r.text.indexOf('{'),r.text.lastIndexOf('}')+1));}
+  if(kind==='mc'&&v){v.choices=(v.choices||[]).map(String).filter(Boolean);if(!Number.isInteger(v.answer)||!v.choices[v.answer]){v.answer=null;v.answerSource='none';}}
+  return v;
+}
+function loadTess(){
+  if(window.Tesseract)return Promise.resolve();
+  return new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';s.onload=res;s.onerror=()=>rej({code:'ocr_load'});document.head.appendChild(s);});
+}
+async function ocrShot(kind,img,msg){
+  msg.textContent='Loading text reader (first time takes a few seconds)…';
+  await loadTess();
+  let data;
+  try{({data}=await Tesseract.recognize(img,'eng',{logger:m=>{if(m.status==='recognizing text'&&$('#shotMsg'))$('#shotMsg').textContent='Reading text… '+Math.round(m.progress*100)+'%';}}));}
+  catch(e){throw {code:'ocr_load'};}
+  return kind==='mc'?parseMcText(data.text):parseCardText(data.text);
+}
+function parseMcText(text){
+  const lines=text.split(/\r?\n/).map(l=>l.replace(/\s+/g,' ').trim()).filter(Boolean)
+    .filter(l=>!/^(question|q)\s*\d+\s*(of\s*\d+)?$/i.test(l));
+  const lab=/^[\(\[]?([A-Ea-e]|[1-5])[\.\)\]:]\s+(.+)$/;
+  let q=[],ch=[],cur=-1;
+  for(const l of lines){
+    const m=l.match(lab);
+    const want=ch.length;
+    if(m&&(('ABCDE'.indexOf(m[1].toUpperCase())===want)||(String(want+1)===m[1]))){ch.push(m[2]);cur=ch.length-1;}
+    else if(cur>=0)ch[cur]+=' '+l;
+    else q.push(l);
+  }
+  if(ch.length<2&&lines.length>=5){q=lines.slice(0,-4);ch=lines.slice(-4);}
+  q=q.join(' ').replace(/^\d+[\.\)]\s+/,'');
+  return {question:q,choices:ch.slice(0,5),answer:null,answerSource:'none',explanation:'',topic:''};
+}
+function parseCardText(text){
+  const paras=text.split(/\n\s*\n/).map(p=>p.replace(/\s+/g,' ').trim()).filter(Boolean);
+  if(paras.length>=2)return {front:paras[0],back:paras.slice(1).join('\n')};
+  const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  return {front:lines[0]||'',back:lines.slice(1).join(' ')};
 }
 function importDlg(){
   openModal(`<h2>Import flashcards</h2>
