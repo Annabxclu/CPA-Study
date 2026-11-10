@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CPA Study Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f1e8;--paper:#fffdf7;--ink:#1b211f;--muted:#666d68;--line:#e2dccd;--soft:#ece7da;
+  --ok:#2e7a4c;--bad:#b3432e;--warn:#a8701a;--accent:#1f5f5b;--accent-soft:rgba(31,95,91,.1);
+  --r:14px;--shadow:0 1px 0 rgba(0,0,0,.04),0 6px 20px -12px rgba(30,30,20,.25);
+  --serif:"Fraunces",Georgia,serif;--sans:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#121514;--paper:#1a1e1d;--ink:#ebe7dd;--muted:#9aa19c;--line:#2b3130;--soft:#232827;--shadow:0 1px 0 rgba(0,0,0,.3),0 8px 24px -14px rgba(0,0,0,.7)}
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--accent)}
+.wrap{max-width:900px;margin:0 auto;padding:0 18px 80px}
+header.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.top .in{max-width:900px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:10px}
+.brand{font-family:var(--serif);font-weight:650;font-size:19px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px;background:none;border:0;padding:0}
+.brand .mk{width:26px;height:26px;border-radius:7px;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-family:var(--mono);font-size:12px}
+.spacer{flex:1}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:500;white-space:nowrap}
+.chip.mono{font-family:var(--mono)}
+.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chip.run{border-color:var(--accent);color:var(--accent)}
+h1,h2,h3{font-family:var(--serif);font-weight:650;letter-spacing:-.015em;margin:0}
+h1{font-size:clamp(28px,6vw,40px);line-height:1.1}
+h2{font-size:20px}
+h3{font-size:17px}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.muted{color:var(--muted)}
+.small{font-size:13.5px}
+.hero{padding:30px 0 10px}
+.hero p{max-width:560px;color:var(--muted);margin:10px 0 0}
+.grid{display:grid;gap:12px}
+.g3{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.g2{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px}
+.sec-tile{text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);position:relative;overflow:hidden;transition:transform .15s,border-color .15s;display:flex;flex-direction:column;gap:8px}
+.sec-tile:hover{transform:translateY(-2px);border-color:var(--c)}
+.sec-tile::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c)}
+.sec-tile .code{font-family:var(--mono);font-weight:600;font-size:22px;color:var(--c)}
+.sec-tile .nm{font-family:var(--serif);font-weight:650;font-size:17px;line-height:1.2}
+.bar{height:6px;border-radius:9px;background:var(--soft);overflow:hidden}
+.bar>i{display:block;height:100%;background:var(--c,var(--accent));border-radius:9px}
+.row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.between{justify-content:space-between}
+.groupttl{margin:26px 0 10px;display:flex;align-items:baseline;gap:10px}
+.btn{border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:9px 14px;font-weight:500;font-size:14.5px;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border-color:transparent}
+.btn.ghost:hover{background:var(--soft)}
+.btn.sm{padding:6px 10px;font-size:13px;border-radius:8px}
+.btn.danger{color:var(--bad)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.sechead{padding:20px 0 4px}
+.sechead .code{font-family:var(--mono);color:var(--accent);font-weight:600}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:14px 0 18px;overflow-x:auto}
+.tabs button{background:none;border:0;padding:10px 12px;font-weight:500;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--ink);border-color:var(--accent)}
+.strat{text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;gap:12px;align-items:flex-start;box-shadow:var(--shadow);transition:border-color .15s}
+.strat:hover{border-color:var(--accent)}
+.strat .ic{flex:none;width:36px;height:36px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-size:17px;font-weight:600}
+.strat b{display:block;font-weight:600}
+.strat span{font-size:13.5px;color:var(--muted);line-height:1.4;display:block;margin-top:2px}
+.strat .badge{margin-left:auto}
+.badge{font-family:var(--mono);font-size:12px;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:2px 8px;font-weight:600}
+.badge.bad{background:rgba(179,67,46,.12);color:var(--bad)}
+.today{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;border-left:4px solid var(--accent)}
+.stat{display:flex;flex-direction:column}
+.stat .n{font-family:var(--mono);font-size:24px;font-weight:600;line-height:1.1}
+.stat .l{font-size:12.5px;color:var(--muted)}
+input[type=text],input[type=search],input[type=number],select,textarea{width:100%;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+textarea{min-height:90px;resize:vertical}
+label.f{display:block;margin:0 0 12px}
+label.f>span{display:block;font-size:13px;font-weight:600;margin-bottom:5px}
+.item{display:flex;gap:12px;padding:12px 4px;border-bottom:1px solid var(--line)}
+.item .main{flex:1;min-width:0}
+.item .q{font-weight:500}
+.item .a{color:var(--muted);font-size:14px;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.item .acts{display:flex;gap:2px;align-items:flex-start}
+.tag{font-size:11.5px;border-radius:6px;padding:1px 7px;background:var(--soft);color:var(--muted);font-weight:500}
+.tag.k{font-family:var(--mono);background:var(--accent-soft);color:var(--accent)}
+.dots{display:inline-flex;gap:2px;vertical-align:middle}
+.dots i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+.star{color:var(--muted)}
+.star.on{color:#d39b1c}
+/* run views */
+.runbar{display:flex;align-items:center;gap:10px;padding:14px 0}
+.prog{flex:1;height:5px;background:var(--soft);border-radius:9px;overflow:hidden}
+.prog>i{display:block;height:100%;background:var(--accent);transition:width .25s}
+.flip{perspective:1400px;margin:8px 0 16px;cursor:pointer;user-select:none}
+.flip-in{display:grid;transition:transform .45s cubic-bezier(.3,.7,.3,1);transform-style:preserve-3d}
+.flip.on .flip-in{transform:rotateY(180deg)}
+.face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--paper);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);min-height:280px;padding:28px 24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--soft) 31px 32px);background-position:0 18px}
+.face.back{transform:rotateY(180deg)}
+.face .t{font-family:var(--serif);font-size:clamp(20px,4.5vw,27px);font-weight:500;line-height:1.3;white-space:pre-wrap}
+.face.back .t{font-family:var(--sans);font-size:clamp(16px,3.6vw,19px);line-height:1.5}
+.face .hint{position:absolute;bottom:12px;font-size:12px;color:var(--muted)}
+.face .lbl{position:absolute;top:12px;left:16px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.face{position:relative}
+.qtext{font-family:var(--serif);font-size:clamp(19px,4vw,23px);font-weight:500;line-height:1.35;margin:6px 0 16px;white-space:pre-wrap}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:9px;transition:border-color .12s,background .12s}
+.opt:hover{border-color:var(--accent)}
+.opt .k{flex:none;width:24px;height:24px;border-radius:7px;border:1px solid var(--line);display:grid;place-items:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt.right{border-color:var(--ok);background:rgba(46,122,76,.1)}
+.opt.wrong{border-color:var(--bad);background:rgba(179,67,46,.09)}
+.opt.right .k{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opt.wrong .k{background:var(--bad);color:#fff;border-color:var(--bad)}
+.lock .opt{pointer-events:none}
+.expl{border-left:3px solid var(--accent);background:var(--paper);padding:12px 14px;border-radius:0 10px 10px 0;margin:10px 0;font-size:15px}
+.grades{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.grades .btn{flex-direction:column;gap:0;padding:9px 4px}
+.grades .btn small{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.g-again{border-color:rgba(179,67,46,.5)!important}
+.g-good{border-color:rgba(46,122,76,.5)!important}
+.big2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.big2 .btn{padding:13px}
+.navgrid{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.navgrid button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--paper);font-family:var(--mono);font-size:13px;position:relative}
+.navgrid button.ans{background:var(--accent-soft);border-color:var(--accent)}
+.navgrid button.cur{outline:2px solid var(--ink);outline-offset:1px}
+.navgrid button.fl::after{content:"";position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:var(--warn)}
+.timer{font-family:var(--mono);font-weight:600;font-size:15px}
+.timer.low{color:var(--bad)}
+.match{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
+.mt{min-height:96px;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:10px;font-size:13.5px;line-height:1.35;text-align:center;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.mt.term{font-weight:600;font-family:var(--serif);font-size:15px}
+.mt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.mt.bad{border-color:var(--bad);animation:shake .3s}
+.mt.gone{opacity:0;pointer-events:none;transform:scale(.9)}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.result{text-align:center;padding:26px 10px}
+.result .score{font-family:var(--mono);font-size:54px;font-weight:600;color:var(--accent);line-height:1}
+.boxes{display:flex;gap:4px;align-items:flex-end;height:90px;margin-top:8px}
+.boxes div{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;justify-content:flex-end}
+.boxes i{display:block;width:100%;background:var(--accent);border-radius:5px 5px 2px 2px;min-height:2px;opacity:.85}
+.boxes small{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.trow{display:grid;grid-template-columns:1fr 110px 44px;gap:10px;align-items:center;padding:7px 0;font-size:14px;border-bottom:1px dashed var(--line)}
+.trow .pct{font-family:var(--mono);text-align:right;font-size:13px}
+.heat{display:flex;gap:4px;flex-wrap:wrap}
+.heat i{width:16px;height:16px;border-radius:4px;background:var(--soft)}
+.heat i.l1{background:color-mix(in srgb,var(--accent) 35%,var(--soft))}
+.heat i.l2{background:color-mix(in srgb,var(--accent) 65%,var(--soft))}
+.heat i.l3{background:var(--accent)}
+.empty{text-align:center;padding:40px 16px;color:var(--muted)}
+.note{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center;margin-top:30px}
+.ai{white-space:pre-wrap;font-size:15px;line-height:1.55}
+.check{display:flex;gap:10px;align-items:flex-start;padding:6px 0}
+.check input{margin-top:4px;width:auto}
+/* modal */
+#modal{position:fixed;inset:0;z-index:50;display:none;align-items:flex-end;justify-content:center;background:rgba(10,12,11,.45)}
+#modal.open{display:flex}
+#modal .sheet{background:var(--bg);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:18px 18px 0 0;padding:20px 18px 24px;box-shadow:0 -10px 40px rgba(0,0,0,.25);animation:up .22s ease}
+@media (min-width:640px){#modal{align-items:center}#modal .sheet{border-radius:18px}}
+@keyframes up{from{transform:translateY(30px);opacity:.4}}
+.sheet h2{margin-bottom:14px}
+.sheet .foot{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.choicerow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.choicerow input[type=radio]{width:20px;height:20px;accent-color:var(--ok);flex:none}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 12px;font-size:13.5px}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;transition:all .2s;z-index:60;pointer-events:none;max-width:90vw}
+#toast.on{opacity:1;transform:translateX(-50%)}
+.splash{display:grid;place-items:center;min-height:60vh;color:var(--muted)}
+.kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:4px;padding:0 4px;color:var(--muted)}
+@media (max-width:520px){.hide-sm{display:none}.grades .btn{font-size:13px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <button class="brand" data-act="home"><span class="mk">CPA</span><span>Study Hub</span></button>
+  <span class="spacer"></span>
+  <button class="chip mono" id="pomoChip" data-act="pomo" title="Focus timer">◷ 25:00</button>
+</div></header>
+<main class="wrap" id="app"><div class="splash">Loading your study data…</div></main>
+<div id="modal"><div class="sheet" id="sheet"></div></div>
+<div id="toast"></div>
+
+<script>
+/* ---------------- Section metadata & starter content ---------------- */
+const SECTIONS = {
+  AUD:{name:'Auditing and Attestation',kind:'Core',color:'#1f6f6a',blurb:'Engagement acceptance, risk assessment, evidence, reports, ethics & independence.'},
+  FAR:{name:'Financial Accounting and Reporting',kind:'Core',color:'#2f4f93',blurb:'US GAAP topics, revenue, leases, governmental and not-for-profit reporting.'},
+  REG:{name:'Taxation and Regulation',kind:'Core',color:'#a63c2c',blurb:'Individual & entity taxation, property transactions, business law, tax ethics.'},
+  BAR:{name:'Business Analysis and Reporting',kind:'Discipline',color:'#9c6410',blurb:'Managerial & cost accounting, financial analysis, advanced technical accounting.'},
+  ISC:{name:'Information Systems and Controls',kind:'Discipline',color:'#6a42a3',blurb:'IT general controls, security & privacy, data management, SOC engagements.'},
+  TCP:{name:'Tax Compliance and Planning',kind:'Discipline',color:'#2e7a46',blurb:'Entity & individual tax planning, property transactions, gift & trust taxation.'}
+};
+const ORDER=['AUD','FAR','REG','BAR','ISC','TCP'];
+
+const STARTER = {
+AUD:{cards:[
+['Reasonable assurance','A high, but not absolute, level of assurance that the financial statements are free of material misstatement.','Engagement basics'],
+['Audit risk model','AR = RMM × DR, where risk of material misstatement (RMM) = inherent risk × control risk.','Risk assessment'],
+['Detection risk','Risk that the auditor\'s procedures will not detect a material misstatement. Inversely related to RMM — the higher the RMM, the lower the acceptable detection risk (more substantive testing).','Risk assessment'],
+['Vouching vs. tracing','Vouching: from the recorded entry back to source documents → tests existence/occurrence.\nTracing: from source documents forward to the records → tests completeness.','Evidence'],
+['Qualified vs. adverse opinion','Material but NOT pervasive misstatement → qualified ("except for").\nMaterial AND pervasive misstatement → adverse.','Reports'],
+['Disclaimer of opinion','Issued when the auditor cannot obtain sufficient appropriate evidence and the possible effects of undetected misstatements could be both material and pervasive.','Reports'],
+['Going concern evaluation period (AICPA)','Substantial doubt is evaluated for a reasonable period: within one year after the date the financial statements are issued (or available to be issued).','Reports'],
+['Type I vs. Type II subsequent events','Type I (recognized): condition existed at the balance sheet date → adjust the FS.\nType II (nonrecognized): condition arose after the BS date → disclose, do not adjust.','Completion'],
+['Dual dating','Dating the report as of the original report date except for a specific note dated later, so the auditor\'s responsibility for later events is limited to that note.','Reports'],
+['Risk of incorrect acceptance','Sampling risk of concluding a balance is fairly stated when it is materially misstated — affects audit EFFECTIVENESS. (Incorrect rejection affects efficiency.)','Sampling'],
+['Partner rotation for SEC issuers','Lead and concurring audit partners rotate off after 5 years and then have a 5-year time-out.','Ethics & independence'],
+['Engagement letter','Written agreement documenting the terms of the audit: objective and scope, auditor and management responsibilities, the applicable framework, and expected form of reports.','Engagement basics']
+],mcqs:[
+['To reduce detection risk, an auditor would most likely:',['Increase the extent of substantive testing','Reduce the assessed level of inherent risk','Increase reliance on internal controls','Perform tests of controls at an interim date'],0,'Detection risk is the only component the auditor controls directly — lowering it means doing more (or more effective, or better-timed) substantive procedures.','Risk assessment'],
+['Tracing shipping documents to recorded sales entries primarily provides evidence that:',['Recorded sales actually occurred','All shipments were recorded as sales','Sales were properly valued','Sales were recorded in the correct period only'],1,'Tracing goes from the source document (shipment) forward to the records, so it tests completeness.','Evidence'],
+['The financial statements contain a misstatement that is material and pervasive. The auditor should issue:',['A qualified opinion','An unmodified opinion with an emphasis-of-matter paragraph','An adverse opinion','A disclaimer of opinion'],2,'Material + pervasive misstatement → adverse. A disclaimer is for an inability to obtain evidence, not a known misstatement.','Reports'],
+['Which component of audit risk is NOT part of the risk of material misstatement?',['Inherent risk','Control risk','Detection risk','None — all three make up RMM'],2,'RMM = inherent risk × control risk. Detection risk is separate and is the one the auditor manages.','Risk assessment'],
+['After year-end but before the report date, a major customer files for bankruptcy due to a financial decline that began well before year-end. The auditor should expect the client to:',['Only disclose the event','Adjust the allowance for doubtful accounts','Do nothing because it occurred after year-end','Restate prior-year statements'],1,'The underlying condition existed at the balance sheet date, so this is a Type I (recognized) subsequent event requiring adjustment.','Completion'],
+['The risk of assessing control risk too low relates to:',['Audit efficiency','Audit effectiveness','Nonsampling risk','Inherent risk'],1,'Over-relying on controls can lead to too little substantive work and an incorrect conclusion — an effectiveness problem.','Sampling']
+]},
+FAR:{cards:[
+['5 steps of revenue recognition (ASC 606)','1) Identify the contract\n2) Identify performance obligations\n3) Determine the transaction price\n4) Allocate the price to the obligations\n5) Recognize revenue when (or as) each obligation is satisfied','Revenue'],
+['Finance lease criteria (lessee) — "OWNES"','Ownership transfers; Written purchase option reasonably certain; Net PV of payments ≥ substantially all of FV; Economic life — term is a major part; Specialized asset. Any one → finance lease.','Leases'],
+['Inventory measurement after ASU 2015-11','FIFO & average cost: lower of cost and net realizable value (LCNRV).\nLIFO & retail inventory method: still lower of cost or market (LCM).','Inventory'],
+['"Market" under LCM','Replacement cost, but not above the ceiling (NRV) and not below the floor (NRV − normal profit margin).','Inventory'],
+['Loss contingency','Accrue if probable AND reasonably estimable. Disclose if reasonably possible. Remote — generally no disclosure.','Contingencies'],
+['Change in principle vs. estimate vs. error','Principle → retrospective application.\nEstimate (incl. depreciation method) → prospective.\nError → restate prior periods (prior-period adjustment).','Accounting changes'],
+['Diluted EPS methods','Options & warrants → treasury stock method.\nConvertible debt/preferred → if-converted method.\nIgnore antidilutive securities.','EPS'],
+['Government-wide statements','Economic resources measurement focus, full accrual basis of accounting.','Governmental'],
+['Governmental funds','Current financial resources measurement focus, modified accrual basis.\nFive types: general, special revenue, capital projects, debt service, permanent.','Governmental'],
+['NFP net asset classes','Net assets with donor restrictions and net assets without donor restrictions.','Not-for-profit'],
+['Bond issued at a discount','Carrying value increases toward face over the term; interest expense (effective rate) exceeds the cash interest paid.','Bonds'],
+['Goodwill impairment (ASU 2017-04)','Impairment = carrying amount of the reporting unit − its fair value, limited to the goodwill allocated to that unit.','Intangibles']
+],mcqs:[
+['A company switches from straight-line to double-declining-balance depreciation. This is accounted for:',['Retrospectively, as a change in principle','Prospectively, as a change in estimate effected by a change in principle','As a prior-period adjustment','By restating only the earliest period presented'],1,'A change in depreciation method is a change in estimate effected by a change in principle, applied prospectively.','Accounting changes'],
+['A probable loss is estimated in a range of $100,000–$300,000, with no amount in the range a better estimate than any other. The company should accrue:',['$0 and disclose','$100,000 and disclose the range','$200,000','$300,000'],1,'When no amount in the range is a better estimate, accrue the minimum and disclose the possible additional loss.','Contingencies'],
+['Governmental funds use which basis of accounting?',['Full accrual','Cash','Modified accrual','Income tax basis'],2,'Governmental funds: current financial resources focus, modified accrual basis.','Governmental'],
+['When bonds are issued at a premium, interest expense each period is:',['Greater than cash interest paid','Less than cash interest paid','Equal to cash interest paid','Zero until maturity'],1,'Premium amortization reduces interest expense below the cash coupon payment.','Bonds'],
+['Under US GAAP, dividends paid to shareholders are reported in the statement of cash flows as:',['Operating activities','Investing activities','Financing activities','A noncash disclosure'],2,'Dividends paid are financing. (Interest paid is operating under US GAAP.)','Cash flows'],
+['A company using FIFO measures inventory at:',['Lower of cost or market','Lower of cost and net realizable value','Replacement cost','Fair value'],1,'After ASU 2015-11, FIFO and average cost use LCNRV; LCM remains for LIFO and the retail method.','Inventory']
+]},
+REG:{cards:[
+['Elements of a valid contract','Offer, acceptance (mutual assent), consideration, legal capacity, and a legal purpose.','Contracts'],
+['Statute of frauds — "MY LEGS"','Must be in writing: Marriage (in consideration of), Year (can\'t be performed within 1 year), Land, Executor (paying estate debts personally), Guarantee (surety), Sale of goods ≥ $500.','Contracts'],
+['Mailbox rule','An acceptance sent by an authorized means is effective when dispatched, not when received. (Revocations and rejections are effective on receipt.)','Contracts'],
+['Apparent authority','Authority a third party reasonably believes an agent has, based on the principal\'s conduct or representations — binds the principal even without actual authority.','Agency'],
+['Basis of inherited property','Generally fair market value at the date of death (or the alternate valuation date, 6 months later, if elected).','Property'],
+['Basis of gifted property','Gain basis: donor\'s basis (carryover).\nLoss basis: lesser of donor\'s basis or FMV at gift. Selling between the two → no gain or loss.','Property'],
+['§1231 property','Depreciable property and real property used in a trade or business and held more than 1 year. Net gains → capital; net losses → ordinary.','Property'],
+['§1245 recapture','Gain on depreciable personal property is ordinary income to the extent of depreciation taken.','Property'],
+['Like-kind exchange (§1031) after TCJA','Limited to real property held for business or investment. Boot received triggers gain recognition.','Property'],
+['Individual net capital loss limit','Up to $3,000 per year ($1,500 married filing separately) against ordinary income; the excess carries forward indefinitely.','Individual tax'],
+['Dividends-received deduction (C corp)','<20% owned → 50%; 20% to <80% → 65%; ≥80% → 100%.','Entity tax'],
+['Preparer penalty — unreasonable position (§6694(a))','Greater of $1,000 or 50% of the income derived from the return. Willful or reckless conduct: greater of $5,000 or 75%.','Ethics & responsibilities']
+],mcqs:[
+['Which contract must be in writing to be enforceable?',['A 6-month employment contract','A contract to sell a parcel of land','A $300 sale of goods','An oral promise to paint a house next week'],1,'Contracts for an interest in land fall under the statute of frauds (the "L" in MY LEGS).','Contracts'],
+['A taxpayer inherits stock. The basis is generally:',['The decedent\'s original cost','FMV at the date of death (or alternate valuation date)','Zero','The amount realized on sale'],1,'Inherited property gets a basis equal to FMV at death, or the alternate valuation date if elected.','Property'],
+['An individual has a $10,000 net capital loss. The amount deductible against ordinary income this year is:',['$0','$3,000','$5,000','$10,000'],1,'The limit is $3,000 ($1,500 MFS); the remaining $7,000 carries forward.','Individual tax'],
+['Corporation A owns 30% of Corporation B and receives a $100,000 dividend. A\'s dividends-received deduction is:',['$50,000','$65,000','$80,000','$100,000'],1,'20% to <80% ownership → 65% DRD.','Entity tax'],
+['Donor basis $10,000; FMV at gift $8,000. The donee later sells for $9,000. The donee recognizes:',['$1,000 loss','$1,000 gain','No gain or loss','$2,000 loss'],2,'Gain basis = $10,000 (no gain at $9,000); loss basis = $8,000 (no loss at $9,000). Selling between the two → no gain or loss.','Property'],
+['An offer made by mail is accepted by mail. The acceptance is effective when:',['Received by the offeror','Dispatched by the offeree','Read by the offeror','Notarized'],1,'Under the mailbox rule, acceptance by an authorized means is effective on dispatch.','Contracts']
+]},
+BAR:{cards:[
+['Contribution margin','Sales − variable costs. CM ratio = CM ÷ sales.','Cost & managerial'],
+['Breakeven point','Units = fixed costs ÷ CM per unit.\nDollars = fixed costs ÷ CM ratio.','Cost & managerial'],
+['Degree of operating leverage','Contribution margin ÷ operating income. Measures how sensitive operating income is to a change in sales.','Cost & managerial'],
+['Materials price variance','(Actual price − standard price) × actual quantity purchased. Favorable when actual price < standard.','Variances'],
+['Materials quantity (usage) variance','(Actual quantity used − standard quantity allowed) × standard price.','Variances'],
+['Net present value (NPV)','PV of future cash flows − initial investment. Accept if NPV > 0 (return exceeds the discount rate).','Capital budgeting'],
+['Internal rate of return (IRR)','The discount rate at which NPV = 0. Accept if IRR > hurdle rate.','Capital budgeting'],
+['Residual income','Operating income − (required rate of return × invested capital).','Performance measures'],
+['Economic value added (EVA)','NOPAT − (WACC × invested capital).','Performance measures'],
+['Primary beneficiary of a VIE','The party with (1) power to direct the activities that most significantly affect the VIE\'s performance and (2) the obligation to absorb losses or right to receive benefits that could be significant. It consolidates the VIE.','Advanced accounting'],
+['Cash flow hedge accounting','Changes in the hedging instrument\'s fair value (included in the effectiveness assessment) go to OCI, then are reclassified to earnings when the hedged item affects earnings.','Advanced accounting'],
+['Reportable segment 10% tests','A segment is reportable if its revenue, |profit or loss|, or assets are ≥10% of the combined amount. Reportable segments must cover ≥75% of external revenue.','Advanced accounting']
+],mcqs:[
+['Fixed costs are $120,000, selling price is $50/unit, and variable cost is $30/unit. Breakeven units are:',['2,400','4,000','6,000','8,000'],2,'$120,000 ÷ ($50 − $30) = 6,000 units.','Cost & managerial'],
+['Contribution margin is $400,000 and operating income is $100,000. The degree of operating leverage is:',['0.25','2.5','4.0','5.0'],2,'DOL = CM ÷ operating income = 400,000 ÷ 100,000 = 4.0. A 10% sales increase → 40% operating income increase.','Cost & managerial'],
+['A division earns $200,000 on $1,000,000 of invested capital with a 15% required return. Residual income is:',['$20,000','$50,000','$150,000','$200,000'],1,'$200,000 − (15% × $1,000,000) = $50,000.','Performance measures'],
+['If a project has a positive NPV, its IRR is:',['Below the discount rate','Equal to the discount rate','Above the discount rate','Undefined'],2,'Positive NPV means the project earns more than the discount rate used, so IRR exceeds that rate.','Capital budgeting'],
+['A favorable materials price variance means:',['Actual price paid was below standard','More material was used than standard','Less material was used than standard','Actual price paid was above standard'],0,'Price variance compares actual vs. standard price; paying less than standard is favorable.','Variances'],
+['Gains on a hedging instrument in a qualifying cash flow hedge are initially reported in:',['Net income','Other comprehensive income','Retained earnings directly','Additional paid-in capital'],1,'Cash flow hedges defer the hedging instrument\'s changes in OCI until the hedged transaction affects earnings.','Advanced accounting']
+]},
+ISC:{cards:[
+['SOC 1 report','Reports on a service organization\'s controls relevant to user entities\' internal control over financial reporting (ICFR). Restricted use.','SOC engagements'],
+['SOC 2 report','Reports on controls relevant to the Trust Services Criteria: security, availability, processing integrity, confidentiality, and privacy. Restricted use.','SOC engagements'],
+['SOC 3 report','General-use report on the Trust Services Criteria — shorter, no detailed description of tests.','SOC engagements'],
+['Type 1 vs. Type 2','Type 1: fairness of the description and suitability of control design as of a point in time.\nType 2: adds operating effectiveness over a period of time.','SOC engagements'],
+['Carve-out vs. inclusive method','When a service org uses a subservice org: carve-out excludes the subservice org\'s controls from the description; inclusive includes them.','SOC engagements'],
+['Complementary user entity controls (CUECs)','Controls the service organization assumes its user entities have in place for the control objectives to be achieved.','SOC engagements'],
+['CIA triad','Confidentiality, integrity, availability — the core objectives of information security.','Security'],
+['RPO vs. RTO','Recovery point objective: maximum acceptable data loss, measured in time.\nRecovery time objective: maximum acceptable downtime before systems are restored.','Business resilience'],
+['Hot / warm / cold site','Hot: fully equipped, near-immediate recovery. Warm: partially equipped. Cold: space and utilities only — slowest, cheapest.','Business resilience'],
+['Preventive, detective, corrective controls','Preventive stops an issue (firewall, access controls). Detective finds it (log review, reconciliations). Corrective fixes it (backups, patching).','Controls'],
+['Symmetric vs. asymmetric encryption','Symmetric: one shared key (fast).\nAsymmetric: public/private key pair — encrypt with recipient\'s public key, decrypt with their private key; sign with your private key.','Security'],
+['NIST CSF 2.0 functions','Govern, Identify, Protect, Detect, Respond, Recover.','Security']
+],mcqs:[
+['A user auditor needs assurance on the operating effectiveness of a payroll processor\'s controls over a period. The most useful report is:',['SOC 1 Type 1','SOC 1 Type 2','SOC 3','SOC 2 Type 1'],1,'Payroll affects ICFR → SOC 1. Operating effectiveness over a period → Type 2.','SOC engagements'],
+['The maximum amount of data, measured in time, an organization can afford to lose is its:',['RTO','RPO','MTBF','SLA'],1,'Recovery point objective = acceptable data loss. RTO = acceptable downtime.','Business resilience'],
+['Which recovery site allows the fastest resumption of operations?',['Cold site','Warm site','Hot site','Mobile site with no equipment'],2,'A hot site is fully equipped and can be operational almost immediately.','Business resilience'],
+['A check digit is primarily used to detect:',['Unauthorized access','Transcription errors in identification numbers','Duplicate payments','Incomplete batches'],1,'A check digit is an input validation control that catches keying/transposition errors.','Controls'],
+['To send a confidential message using asymmetric encryption, the sender encrypts it with:',['The sender\'s private key','The sender\'s public key','The recipient\'s public key','The recipient\'s private key'],2,'Only the recipient\'s private key can decrypt something encrypted with the recipient\'s public key.','Security'],
+['A firewall is best classified as a:',['Preventive control','Detective control','Corrective control','Compensating control'],0,'Firewalls block unauthorized traffic before it gets in — preventive.','Controls']
+]},
+TCP:{cards:[
+['S corporation eligibility','Domestic corporation; ≤100 shareholders; one class of stock; only eligible shareholders (individuals, estates, certain trusts and exempt orgs — no nonresident aliens, partnerships, or C corps).','Entity planning'],
+['§351 nonrecognition','No gain or loss when property is transferred to a corporation solely for stock and the transferors control ≥80% immediately after. Boot triggers gain.','Entity planning'],
+['Partner outside basis & liabilities','An increase in a partner\'s share of partnership liabilities is treated as a cash contribution → increases outside basis. A decrease is a deemed distribution.','Partnerships'],
+['Guaranteed payments','Payments to a partner for services/capital without regard to partnership income. Ordinary income to the partner (generally subject to SE tax); deductible by the partnership.','Partnerships'],
+['S corp stock basis ordering','Increase for income items → decrease for distributions → decrease for nondeductible, noncapital expenses → decrease for losses and deductions.','S corporations'],
+['Built-in gains tax','Applies to an S corp that converted from a C corp on built-in gains recognized during the 5-year recognition period.','S corporations'],
+['Accumulated earnings & personal holding company taxes','Penalty taxes on C corps at 20% — AET on unreasonable accumulations; PHC tax on undistributed passive (personal holding company) income.','Entity planning'],
+['Simple vs. complex trust','Simple: must distribute all income currently, makes no charitable contributions, distributes no corpus. Anything else is complex.','Trusts & estates'],
+['Distributable net income (DNI)','Caps the trust\'s distribution deduction and the amount taxable to beneficiaries; determines the character of distributions.','Trusts & estates'],
+['Kiddie tax','A child\'s unearned income above the annual threshold is taxed at the parents\' marginal rate.','Individual planning'],
+['Return due dates (calendar year)','Form 1065 and 1120-S: March 15.\nForm 1120: April 15.\nForm 1041: April 15.','Compliance'],
+['§179 expensing limit','The deduction cannot exceed taxable income from the active conduct of a trade or business; the disallowed amount carries forward.','Property']
+],mcqs:[
+['Which of the following may be a shareholder of an S corporation?',['A partnership','A C corporation','An estate','A nonresident alien'],2,'Estates are eligible S corp shareholders; partnerships, corporations, and nonresident aliens are not.','Entity planning'],
+['For §351 to apply, transferors of property must control at least what percentage of the corporation immediately after the exchange?',['50%','67%','80%','100%'],2,'Control = at least 80% of voting power and 80% of each class of nonvoting stock.','Entity planning'],
+['A partner\'s share of partnership liabilities increases by $20,000. The partner\'s outside basis:',['Decreases by $20,000','Is unchanged','Increases by $20,000','Increases only when the debt is repaid'],2,'An increase in a partner\'s share of liabilities is treated as a contribution of money.','Partnerships'],
+['The original due date for a calendar-year S corporation return (Form 1120-S) is:',['January 31','March 15','April 15','October 15'],1,'Partnership and S corp returns are due the 15th day of the 3rd month after year-end.','Compliance'],
+['A simple trust is one that:',['May accumulate income at the trustee\'s discretion','Must distribute all income currently','Makes charitable contributions','Distributes corpus each year'],1,'A simple trust must distribute all income currently, makes no charitable gifts, and distributes no corpus.','Trusts & estates'],
+['Guaranteed payments to a partner for services are:',['Tax-free to the partner','Ordinary income to the partner and deductible by the partnership','Capital gain to the partner','Nondeductible by the partnership'],1,'Guaranteed payments are ordinary income to the partner (generally SE income) and deductible by the partnership.','Partnerships']
+]}
+};
+
+const STRATS = [
+ {id:'review',ic:'↻',name:'Spaced review',why:'Cards come back right before you would forget them. The best daily habit.'},
+ {id:'flash',ic:'▭',name:'Flashcards',why:'Flip through and sort into “got it” and “still learning”.'},
+ {id:'quiz',ic:'◉',name:'Multiple choice',why:'Instant feedback with explanations after every question.'},
+ {id:'exam',ic:'⏱',name:'Exam simulation',why:'Timed testlet, no feedback until you submit. Builds pacing.'},
+ {id:'write',ic:'✎',name:'Active recall',why:'Type the answer from memory before you see it. Harder = stickier.'},
+ {id:'match',ic:'⇄',name:'Match',why:'Race to pair terms with definitions. A quick warm-up.'},
+ {id:'weak',ic:'◎',name:'Weak spots',why:'Only the items you have missed. Close the gaps.'},
+ {id:'teach',ic:'❝',name:'Teach it back',why:'Explain a topic in plain words (Feynman technique) and find the fuzzy parts.'}
+];
+const MODE_NAMES = Object.fromEntries(STRATS.map(s=>[s.id,s.name]));
+const DAY=86400000, INT=[0,1,2,4,8,16,32];
+
+/* ---------------- Utilities ---------------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+const clone=o=>JSON.parse(JSON.stringify(o));
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const dkey=(d=new Date())=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const pct=(a,b)=>b?Math.round(100*a/b):0;
+const fmt=s=>{s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),2400);}
+function timeout(p,ms){return Promise.race([p,new Promise((_,r)=>setTimeout(()=>r({code:'timeout'}),ms))]);}
+function lsGet(k){try{const v=localStorage.getItem('cpahub:'+k);return v?JSON.parse(v):null;}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem('cpahub:'+k,JSON.stringify(v));}catch(e){}}
+
+/* ---------------- Storage ---------------- */
+const Store={db:null,uid:null,mode:'local',timers:{},busy:{},again:{},cache:{},
+  async init(){
+    try{
+      if(!window.claude||!claude.use) return;
+      const [db,user]=await timeout(Promise.all([claude.use('db'),claude.use('user')]),11000);
+      if(db&&user){const id=await user.id(); if(id){this.db=db;this.uid=id;this.mode='cloud';}}
+    }catch(e){}
+  },
+  ref(k){return this.db.collection('data/users/'+this.uid).doc(k);},
+  async load(k){
+    let d=null;
+    if(this.mode==='cloud'){
+      try{const s=await timeout(this.ref(k).get(),10000); if(s.exists) d=clone(s.data());}
+      catch(e){this.slow=true;}
+    }
+    if(!d) d=lsGet(k);
+    this.cache[k]=d; return d;
+  },
+  save(k,v){
+    this.cache[k]=v; lsSet(k,v);
+    if(this.mode!=='cloud') return;
+    clearTimeout(this.timers[k]);
+    this.timers[k]=setTimeout(()=>this.flush(k),900);
+  },
+  async flush(k){
+    if(this.busy[k]){this.again[k]=true;return;}
+    this.busy[k]=true;
+    try{await this.ref(k).set(clone(this.cache[k]));}
+    catch(e){
+      if(e&&e.code==='unavailable'){setTimeout(()=>this.flush(k),1500+Math.random()*1500);}
+      else if(e&&e.code==='quota_exceeded'){toast('Storage is full — delete some cards to keep saving online.');}
+      else if(e&&(e.code==='invalid_argument'||e.code==='revoked'||e.code==='not_granted')){this.mode='local';toast('Saving in this browser only for now.');}
+    }
+    this.busy[k]=false;
+    if(this.again[k]){this.again[k]=false;this.flush(k);}
+  }
+};
+
+/* ---------------- State ---------------- */
+const S={sec:null,tab:'study',data:{},prefs:null,run:null,q:'',filter:'all',sample:null};
+const D=()=>S.data[S.sec];
+function blank(){return {v:1,seeded:false,cards:[],mcqs:[],sessions:[],notes:[],matchBest:null};}
+function seed(sec,d){
+  const st=STARTER[sec];
+  st.cards.forEach(([f,b,t])=>d.cards.push(newCard(f,b,t,'starter')));
+  st.mcqs.forEach(([q,c,a,x,t])=>d.mcqs.push(newMcq(q,c,a,x,t,'starter')));
+  d.seeded=true;
+}
+function newCard(f,b,t,src='me'){return {id:uid(),f,b,t:t||'General',star:false,box:0,due:0,ok:0,miss:0,lr:null,last:0,src};}
+function newMcq(q,c,a,x,t,src='me'){return {id:uid(),q,c,a,x:x||'',t:t||'General',star:false,ok:0,miss:0,lr:null,last:0,src};}
+function save(){Store.save(S.sec,D());}
+function savePrefs(){Store.save('prefs',S.prefs);}
+function logActivity(n=1){const k=dkey();S.prefs.log[k]=(S.prefs.log[k]||0)+n;savePrefs();}
+function topics(d){return [...new Set([...d.cards.map(c=>c.t),...d.mcqs.map(m=>m.t)])].sort();}
+function dueCards(d){const now=Date.now();return d.cards.filter(c=>c.box>0&&c.due<=now);}
+function newCards(d){return d.cards.filter(c=>c.box===0);}
+function weakItems(d){const w=x=>x.miss>0&&(x.lr===0||x.miss>=x.ok);return {cards:d.cards.filter(w),mcqs:d.mcqs.filter(w)};}
+function mastered(d){return d.cards.filter(c=>c.box>=4).length;}
+function streak(){const log=S.prefs.log;let n=0;const d=new Date();if(!log[dkey(d)])d.setDate(d.getDate()-1);while(log[dkey(d)]){n++;d.setDate(d.getDate()-1);}return n;}
+function applySecTheme(){
+  const c=S.sec?SECTIONS[S.sec].color:'#1f5f5b';
+  document.documentElement.style.setProperty('--accent',c);
+  document.documentElement.style.setProperty('--accent-soft',c+'1c');
+}
+
+/* ---------------- Boot ---------------- */
+(async function boot(){
+  await Store.init();
+  S.prefs=(await Store.load('prefs'))||{log:{},pomos:0,last:null};
+  S.prefs.log=S.prefs.log||{};
+  await Promise.all(ORDER.map(async k=>{
+    let d=await Store.load(k);
+    if(!d){d=blank();}
+    d.cards=d.cards||[];d.mcqs=d.mcqs||[];d.sessions=d.sessions||[];d.notes=d.notes||[];
+    if(!d.seeded){seed(k,d);Store.save(k,d);}
+    S.data[k]=d;
+  }));
+  const h=location.hash.replace('#','').toUpperCase();
+  if(SECTIONS[h]) S.sec=h;
+  applySecTheme(); render();
+  try{const sm=await claude.use('sample'); if(sm){S.sample=sm; if(!S.run) render();}}catch(e){}
+})();
+window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','').toUpperCase();if(S.run)return;S.sec=SECTIONS[h]?h:null;applySecTheme();render();});
+
+/* ---------------- Rendering ---------------- */
+function render(){
+  const app=$('#app');
+  if(S.run) app.innerHTML=renderRun();
+  else if(!S.sec) app.innerHTML=renderHome();
+  else app.innerHTML=renderSection();
+  afterRender();
+}
+function afterRender(){
+  const s=$('#searchBox'); if(s){s.oninput=()=>{S.q=s.value;$('#list').innerHTML=renderList();};}
+  const ta=$('#recall'); if(ta&&!S.run.revealed) ta.focus({preventScroll:true});
+}
+
+function renderHome(){
+  const st=streak(), today=S.prefs.log[dkey()]||0;
+  const tile=k=>{const s=SECTIONS[k],d=S.data[k],tot=d.cards.length,m=mastered(d),due=dueCards(d).length;
+    return `<button class="sec-tile" style="--c:${s.color}" data-act="open" data-sec="${k}">
+      <div class="row between"><span class="code">${k}</span>${due?`<span class="badge" style="background:${s.color}1c;color:${s.color}">${due} due</span>`:''}</div>
+      <div class="nm">${s.name}</div>
+      <div class="muted small">${s.blurb}</div>
+      <div class="bar" style="margin-top:4px"><i style="width:${pct(m,tot)}%"></i></div>
+      <div class="small muted">${m}/${tot} cards mastered · ${d.mcqs.length} questions</div></button>`;};
+  return `<section class="hero">
+    <div class="eyebrow">Your CPA study hub</div>
+    <h1>Pick the section you're studying.</h1>
+    <p>Each section keeps its own flashcards, questions, review schedule and progress, so you can focus on one at a time and come back to the others later.</p>
+    <div class="row" style="margin-top:16px"><span class="chip">🔥 ${st}-day streak</span><span class="chip">${today} reviewed today</span>${S.prefs.pomos?`<span class="chip">◷ ${S.prefs.pomos} focus sessions</span>`:''}</div>
+  </section>
+  <div class="groupttl"><h2>Core</h2><span class="muted small">Everyone takes all three</span></div>
+  <div class="grid g3">${['AUD','FAR','REG'].map(tile).join('')}</div>
+  <div class="groupttl"><h2>Discipline</h2><span class="muted small">You choose one</span></div>
+  <div class="grid g3">${['BAR','ISC','TCP'].map(tile).join('')}</div>
+  ${storageNote()}`;
+}
+function storageNote(){
+  return `<div class="note">${Store.mode==='cloud'?'✓ Your cards and progress are saved to your account and private to you.':'Progress is saved in this browser only.'}</div>`;
+}
+
+function renderSection(){
+  const s=SECTIONS[S.sec];
+  return `<div class="sechead">
+    <button class="btn ghost sm" data-act="home" style="margin-left:-10px">← All sections</button>
+    <div class="row" style="margin-top:6px"><span class="code">${S.sec}</span><span class="tag">${s.kind}</span></div>
+    <h1 style="font-size:clamp(24px,5vw,32px)">${s.name}</h1>
+  </div>
+  <div class="tabs">
+    ${['study','cards','progress'].map(t=>`<button class="${S.tab===t?'on':''}" data-act="tab" data-tab="${t}">${{study:'Study',cards:'My cards',progress:'Progress'}[t]}</button>`).join('')}
+  </div>
+  ${S.tab==='study'?renderStudy():S.tab==='cards'?renderCards():renderProgress()}
+  ${storageNote()}`;
+}
+
+function renderStudy(){
+  const d=D(),due=dueCards(d).length,nw=newCards(d).length,w=weakItems(d),wn=w.cards.length+w.mcqs.length;
+  let sug,sugMode;
+  if(due) {sug=`You have ${due} card${due>1?'s':''} due for review.`;sugMode='review';}
+  else if(wn>=3){sug=`${wn} items you've missed are waiting.`;sugMode='weak';}
+  else if(nw){sug=`${nw} new card${nw>1?'s':''} ready to learn.`;sugMode='review';}
+  else {sug='All caught up — test yourself under exam conditions.';sugMode='exam';}
+  const badge=id=>id==='review'&&(due+Math.min(nw,15))?`<span class="badge">${due+Math.min(nw,15)}</span>`:id==='weak'&&wn?`<span class="badge bad">${wn}</span>`:'';
+  return `<div class="panel today">
+      <div class="stat"><span class="n">${due}</span><span class="l">due</span></div>
+      <div class="stat"><span class="n">${nw}</span><span class="l">new</span></div>
+      <div class="stat"><span class="n">${mastered(d)}</span><span class="l">mastered</span></div>
+      <div style="flex:1;min-width:180px"><div class="small">${sug}</div></div>
+      <button class="btn primary" data-act="start" data-mode="${sugMode}">Start ${MODE_NAMES[sugMode].toLowerCase()}</button>
+    </div>
+    <div class="grid g2">${STRATS.map(s=>`<button class="strat" data-act="start" data-mode="${s.id}">
+      <span class="ic">${s.ic}</span><span style="flex:1"><b>${s.name}</b><span>${s.why}</span></span>${badge(s.id)}</button>`).join('')}</div>`;
+}
+
+function renderCards(){
+  const d=D();
+  return `<div class="row" style="margin-bottom:12px">
+      <button class="btn primary sm" data-act="addCard">+ Flashcard</button>
+      <button class="btn primary sm" data-act="addMcq">+ Multiple choice</button>
+      <button class="btn sm" data-act="import">Import</button>
+      ${S.sample?`<button class="btn sm" data-act="gen">✦ Generate with Claude</button>`:''}
+      <span class="spacer"></span>
+      <button class="btn ghost sm" data-act="export">Copy as text</button>
+    </div>
+    <input type="search" id="searchBox" placeholder="Search ${d.cards.length+d.mcqs.length} items…" value="${esc(S.q)}">
+    <div class="seg" style="margin:10px 0 4px">
+      ${[['all','All'],['card',`Flashcards (${d.cards.length})`],['mc',`Multiple choice (${d.mcqs.length})`],['star','★ Starred'],['weak','Missed']].map(([k,l])=>`<button class="${S.filter===k?'on':''}" data-act="filter" data-f="${k}">${l}</button>`).join('')}
+    </div>
+    <div id="list">${renderList()}</div>`;
+}
+function renderList(){
+  const d=D(),q=S.q.trim().toLowerCase(),f=S.filter;
+  const match=(...xs)=>!q||xs.join(' ').toLowerCase().includes(q);
+  const wk=x=>x.miss>0&&(x.lr===0||x.miss>=x.ok);
+  let items=[];
+  if(f!=='mc') d.cards.forEach(c=>{if((f!=='star'||c.star)&&(f!=='weak'||wk(c))&&match(c.f,c.b,c.t))items.push(['card',c]);});
+  if(f!=='card') d.mcqs.forEach(m=>{if((f!=='star'||m.star)&&(f!=='weak'||wk(m))&&match(m.q,m.c.join(' '),m.t))items.push(['mc',m]);});
+  if(!items.length) return `<div class="empty">${q||f!=='all'?'Nothing matches.':'No cards yet. Add your first one above.'}</div>`;
+  return items.map(([k,x])=>{
+    const dots=k==='card'?`<span class="dots" title="Review level ${x.box}/6">${[1,2,3,4,5,6].map(i=>`<i class="${x.box>=i?'on':''}"></i>`).join('')}</span>`:'';
+    return `<div class="item"><div class="main">
+      <div class="row" style="gap:6px;margin-bottom:3px"><span class="tag k">${k==='card'?'CARD':'MC'}</span><span class="tag">${esc(x.t)}</span>${dots}${x.src==='ai'?'<span class="tag">✦ AI</span>':''}</div>
+      <div class="q">${esc(k==='card'?x.f:x.q)}</div>
+      <div class="a">${esc(k==='card'?x.b:'✓ '+x.c[x.a])}</div></div>
+      <div class="acts">
+        <button class="btn ghost sm star ${x.star?'on':''}" data-act="star" data-k="${k}" data-id="${x.id}" aria-label="Star">${x.star?'★':'☆'}</button>
+        <button class="btn ghost sm" data-act="edit" data-k="${k}" data-id="${x.id}" aria-label="Edit">✎</button>
+        <button class="btn ghost sm danger" data-act="del" data-k="${k}" data-id="${x.id}" aria-label="Delete">✕</button>
+      </div></div>`;}).join('');
+}
+
+function renderProgress(){
+  const d=D(),cards=d.cards,tot=cards.length;
+  const mOk=d.mcqs.reduce((a,m)=>a+m.ok,0),mAll=d.mcqs.reduce((a,m)=>a+m.ok+m.miss,0);
+  const boxes=[0,1,2,3,4,5,6].map(b=>cards.filter(c=>c.box===b).length),mx=Math.max(1,...boxes);
+  const byT={};[...cards,...d.mcqs].forEach(x=>{const t=byT[x.t]||(byT[x.t]={ok:0,n:0});t.ok+=x.ok;t.n+=x.ok+x.miss;});
+  const trows=Object.entries(byT).filter(([,v])=>v.n>0).sort((a,b)=>a[1].ok/a[1].n-b[1].ok/b[1].n);
+  const days=[];for(let i=27;i>=0;i--){const dt=new Date();dt.setDate(dt.getDate()-i);days.push(S.prefs.log[dkey(dt)]||0);}
+  const lv=n=>n===0?'':n<10?'l1':n<30?'l2':'l3';
+  return `<div class="grid g2" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr))">
+    <div class="panel stat"><span class="n">${pct(mastered(d),tot)}%</span><span class="l">cards mastered (${mastered(d)}/${tot})</span></div>
+    <div class="panel stat"><span class="n">${mAll?pct(mOk,mAll)+'%':'—'}</span><span class="l">multiple-choice accuracy</span></div>
+    <div class="panel stat"><span class="n">${dueCards(d).length}</span><span class="l">cards due now</span></div>
+    <div class="panel stat"><span class="n">${streak()}</span><span class="l">day streak (all sections)</span></div>
+  </div>
+  <div class="panel" style="margin-top:12px"><h3>Review levels</h3><div class="muted small">New → level 6. Level 4+ counts as mastered; each level waits longer before the card returns.</div>
+    <div class="boxes">${boxes.map((n,i)=>`<div><small>${n}</small><i style="height:${Math.round(70*n/mx)}%"></i><small>${i===0?'new':i}</small></div>`).join('')}</div></div>
+  <div class="panel" style="margin-top:12px"><h3>By topic</h3><div class="muted small" style="margin-bottom:6px">Weakest first — that's where your next session should go.</div>
+    ${trows.length?trows.map(([t,v])=>{const p=pct(v.ok,v.n);return `<div class="trow"><span>${esc(t)}</span><span class="bar"><i style="width:${p}%;background:${p<60?'var(--bad)':p<80?'var(--warn)':'var(--ok)'}"></i></span><span class="pct">${p}%</span></div>`;}).join(''):'<div class="muted small">Answer some questions to see topic accuracy.</div>'}</div>
+  <div class="panel" style="margin-top:12px"><h3>Last 4 weeks</h3><div class="heat" style="margin-top:8px">${days.map(n=>`<i class="${lv(n)}" title="${n} reviewed"></i>`).join('')}</div></div>
+  <div class="panel" style="margin-top:12px"><h3>Recent sessions</h3>
+    ${d.sessions.length?d.sessions.slice(-8).reverse().map(s=>`<div class="trow" style="grid-template-columns:1fr auto auto"><span>${MODE_NAMES[s.m]||s.m}</span><span class="muted small">${new Date(s.d).toLocaleDateString()}</span><span class="pct">${s.n?s.s+'/'+s.n:fmt(s.s)}</span></div>`).join(''):'<div class="muted small">No sessions yet.</div>'}</div>
+  ${d.notes.length?`<div class="panel" style="margin-top:12px"><h3>Your teach-back notes</h3>${d.notes.slice().reverse().map(n=>`<details style="padding:8px 0;border-bottom:1px dashed var(--line)"><summary><b>${esc(n.topic)}</b> <span class="muted small">${new Date(n.d).toLocaleDateString()}</span></summary><div class="ai small" style="margin-top:6px">${esc(n.text)}</div>${n.fb?`<div class="expl ai small">${esc(n.fb)}</div>`:''}</details>`).join('')}</div>`:''}
+  <div class="row" style="margin-top:16px"><button class="btn sm danger" data-act="resetSched">Reset review schedule</button></div>`;
+}
+
+/* ---------------- Modal helpers ---------------- */
+function openModal(html){$('#sheet').innerHTML=html;$('#modal').classList.add('open');const f=$('#sheet [autofocus]');if(f)setTimeout(()=>f.focus(),50);}
+function closeModal(){$('#modal').classList.remove('open');$('#sheet').innerHTML='';}
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+function confirmBox(msg,ok='Delete'){return new Promise(res=>{openModal(`<h2>Are you sure?</h2><p>${esc(msg)}</p><div class="foot"><button class="btn" id="cNo">Cancel</button><button class="btn primary" id="cYes">${ok}</button></div>`);$('#cNo').onclick=()=>{closeModal();res(false)};$('#cYes').onclick=()=>{closeModal();res(true)};});}
+function topicField(val){const t=topics(D());return `<label class="f"><span>Topic</span><input type="text" id="fT" list="tlist" value="${esc(val||'')}" placeholder="e.g. Leases"><datalist id="tlist">${t.map(x=>`<option value="${esc(x)}">`).join('')}</datalist></label>`;}
+
+function editCard(c){
+  openModal(`<h2>${c?'Edit':'New'} flashcard</h2>
+    <label class="f"><span>Front — term or question</span><textarea id="fF" autofocus style="min-height:70px">${esc(c?.f)}</textarea></label>
+    <label class="f"><span>Back — definition or answer</span><textarea id="fB">${esc(c?.b)}</textarea></label>
+    ${topicField(c?.t)}
+    <div class="foot">${c?'':'<button class="btn" id="saveMore">Save & add another</button>'}<button class="btn" data-act="close">Cancel</button><button class="btn primary" id="saveC">Save</button></div>`);
+  const go=more=>{const f=$('#fF').value.trim(),b=$('#fB').value.trim(),t=$('#fT').value.trim()||'General';
+    if(!f||!b){toast('Fill in both sides.');return;}
+    if(c){c.f=f;c.b=b;c.t=t;}else D().cards.unshift(newCard(f,b,t));
+    save(); if(more){editCard(null);$('#fT').value=t;toast('Saved');} else {closeModal();render();}};
+  $('#saveC').onclick=()=>go(false); if($('#saveMore'))$('#saveMore').onclick=()=>go(true);
+}
+function editMcq(m){
+  const ch=m?m.c.slice():['','','',''];while(ch.length<4)ch.push('');
+  openModal(`<h2>${m?'Edit':'New'} multiple-choice question</h2>
+    <label class="f"><span>Question</span><textarea id="fQ" autofocus>${esc(m?.q)}</textarea></label>
+    <div class="f"><span style="display:block;font-size:13px;font-weight:600;margin-bottom:5px">Choices — select the correct one</span>
+    ${ch.map((x,i)=>`<div class="choicerow"><input type="radio" name="ans" value="${i}" ${m?(m.a===i?'checked':''):(i===0?'checked':'')}><input type="text" class="fC" placeholder="Choice ${'ABCDE'[i]}" value="${esc(x)}"></div>`).join('')}</div>
+    <label class="f"><span>Explanation (shown after answering)</span><textarea id="fX" style="min-height:70px">${esc(m?.x)}</textarea></label>
+    ${topicField(m?.t)}
+    <div class="foot">${m?'':'<button class="btn" id="saveMore">Save & add another</button>'}<button class="btn" data-act="close">Cancel</button><button class="btn primary" id="saveM">Save</button></div>`);
+  const go=more=>{const q=$('#fQ').value.trim();const raw=[...document.querySelectorAll('.fC')].map(i=>i.value.trim());
+    let a=+document.querySelector('input[name=ans]:checked').value;
+    if(!q){toast('Add a question.');return;}
+    if(!raw[a]){toast('The correct choice is empty.');return;}
+    const c=[];let na=0;raw.forEach((x,i)=>{if(x){if(i===a)na=c.length;c.push(x);}});
+    if(c.length<2){toast('Add at least two choices.');return;}
+    const x=$('#fX').value.trim(),t=$('#fT').value.trim()||'General';
+    if(m)Object.assign(m,{q,c,a:na,x,t});else D().mcqs.unshift(newMcq(q,c,na,x,t));
+    save(); if(more){editMcq(null);$('#fT').value=t;toast('Saved');} else {closeModal();render();}};
+  $('#saveM').onclick=()=>go(false); if($('#saveMore'))$('#saveMore').onclick=()=>go(true);
+}
+function importDlg(){
+  openModal(`<h2>Import flashcards</h2>
+    <p class="muted small" style="margin-top:-6px">Paste one card per line. From Quizlet: open a set → ⋯ → Export, keep “Tab” between term and definition and “New line” between rows, then copy and paste here.</p>
+    <textarea id="iT" autofocus style="min-height:160px" placeholder="Term&#9;Definition&#10;Inherent risk&#9;Susceptibility of an assertion to misstatement before controls"></textarea>
+    <div class="row" style="margin:10px 0"><span class="small" style="font-weight:600">Between term & definition:</span>
+      <div class="seg" id="iSep">${[['\t','Tab'],[' - ','Dash'],[';','Semicolon'],[',','Comma']].map(([v,l],i)=>`<button data-v="${esc(v)}" class="${i===0?'on':''}">${l}</button>`).join('')}</div></div>
+    ${topicField('')}
+    <div class="muted small" id="iCount">0 cards found</div>
+    <div class="foot"><button class="btn" data-act="close">Cancel</button><button class="btn primary" id="iGo">Import</button></div>`);
+  let sep='\t';
+  const parse=()=>$('#iT').value.split(/\r?\n/).map(l=>{const i=l.indexOf(sep);return i>0?[l.slice(0,i).trim(),l.slice(i+sep.length).trim()]:null;}).filter(x=>x&&x[0]&&x[1]);
+  const upd=()=>$('#iCount').textContent=parse().length+' cards found';
+  $('#iT').oninput=upd;
+  $('#iSep').onclick=e=>{const b=e.target.closest('button');if(!b)return;sep=b.dataset.v;[...$('#iSep').children].forEach(x=>x.classList.toggle('on',x===b));upd();};
+  $('#iGo').onclick=()=>{const rows=parse();if(!rows.length){toast('No cards found — check the separator.');return;}
+    const t=$('#fT').value.trim()||'Imported';rows.forEach(([f,b])=>D().cards.push(newCard(f,b,t)));save();closeModal();render();toast(`Imported ${rows.length} cards`);};
+}
+function exportDlg(){
+  const d=D();const txt=d.cards.map(c=>c.f.replace(/\s+/g,' ')+'\t'+c.b.replace(/\s+/g,' ')).join('\n');
+  openModal(`<h2>Copy your flashcards</h2><p class="muted small">Tab-separated, one card per line — paste into Quizlet's import box or a spreadsheet.</p>
+    <textarea id="eT" style="min-height:200px" readonly>${esc(txt)}</textarea>
+    <div class="foot"><button class="btn" data-act="close">Close</button><button class="btn primary" id="eCopy">Copy</button></div>`);
+  $('#eCopy').onclick=async()=>{try{await navigator.clipboard.writeText(txt);toast('Copied');}catch(e){$('#eT').select();toast('Press Ctrl/Cmd+C to copy');}};
+}
+
+/* ---------- Generate with Claude ---------- */
+function genDlg(){
+  let kind='card',n=8;
+  openModal(`<h2>✦ Generate with Claude</h2>
+    <label class="f"><span>Topic</span><input type="text" id="gT" autofocus placeholder="e.g. ${S.sec==='FAR'?'Lease accounting for lessees':S.sec==='AUD'?'Audit sampling':S.sec==='REG'?'Partnership basis':'Variance analysis'}" list="tlist"><datalist id="tlist">${topics(D()).map(x=>`<option value="${esc(x)}">`).join('')}</datalist></label>
+    <div class="row" style="margin-bottom:10px"><div class="seg" id="gK"><button class="on" data-v="card">Flashcards</button><button data-v="mc">Multiple choice</button></div>
+    <div class="seg" id="gN">${[5,8,12].map(x=>`<button data-v="${x}" class="${x===8?'on':''}">${x}</button>`).join('')}</div></div>
+    <div id="gOut"></div>
+    <div class="foot"><button class="btn" data-act="close">Cancel</button><button class="btn primary" id="gGo">Generate</button></div>`);
+  const segs=(id,cb)=>$(id).onclick=e=>{const b=e.target.closest('button');if(!b)return;[...$(id).children].forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v);};
+  segs('#gK',v=>kind=v);segs('#gN',v=>n=+v);
+  $('#gGo').onclick=async()=>{
+    const topic=$('#gT').value.trim();if(!topic){toast('Enter a topic.');return;}
+    const btn=$('#gGo');btn.disabled=true;btn.textContent='Generating…';$('#gOut').innerHTML='<div class="muted small">Writing questions…</div>';
+    const shape=kind==='card'?'{"items":[{"front":"term or question","back":"concise answer, max 45 words"}]}':'{"items":[{"question":"exam-style stem","choices":["A","B","C","D"],"answer":0,"explanation":"why the answer is right and the others wrong, max 50 words"}]}';
+    const prompt=`You are an expert CPA exam tutor writing study material for the ${S.sec} (${SECTIONS[S.sec].name}) section of the current CPA exam blueprint.
+Write ${n} ${kind==='card'?'flashcards':'multiple-choice questions with exactly 4 choices'} on the topic: "${topic}".
+Be technically accurate under current US GAAP / AICPA / PCAOB / IRC rules as relevant. Avoid year-specific dollar thresholds unless essential. Vary difficulty; use realistic exam-style scenarios and numbers for questions. "answer" is the 0-based index of the correct choice; vary its position.
+Return ONLY JSON in this exact shape, no other text: ${shape}`;
+    try{
+      let val;
+      try{val=await S.sample.json(prompt,{modelTier:'default'});}
+      catch(e){if(e&&e.code==='not_granted')throw e;const r=await S.sample(prompt,{modelTier:'default'});val=JSON.parse(r.text.slice(r.text.indexOf('{'),r.text.lastIndexOf('}')+1));}
+      const items=(val&&val.items||[]).filter(it=>kind==='card'?(it.front&&it.back):(it.question&&Array.isArray(it.choices)&&it.choices.length>=2&&Number.isInteger(it.answer)&&it.choices[it.answer]));
+      if(!items.length)throw {message:'empty'};
+      $('#gOut').innerHTML=`<div class="small muted" style="margin-bottom:6px">Untick any you don't want. AI can make mistakes — check anything surprising against your review course.</div>`+items.map((it,i)=>`<label class="check"><input type="checkbox" checked data-i="${i}"><span><b>${esc(kind==='card'?it.front:it.question)}</b><br><span class="muted small">${esc(kind==='card'?it.back:'✓ '+it.choices[it.answer])}</span></span></label>`).join('');
+      btn.disabled=false;btn.textContent=`Add selected`;
+      btn.onclick=()=>{const keep=[...document.querySelectorAll('#gOut input:checked')].map(x=>items[+x.dataset.i]);
+        keep.forEach(it=>{if(kind==='card')D().cards.unshift(newCard(String(it.front),String(it.back),topic,'ai'));else D().mcqs.unshift(newMcq(String(it.question),it.choices.map(String),it.answer,String(it.explanation||''),topic,'ai'));});
+        save();closeModal();render();toast(`Added ${keep.length}`);};
+    }catch(e){
+      btn.disabled=false;btn.textContent='Try again';
+      $('#gOut').innerHTML=`<div class="small" style="color:var(--bad)">${e&&e.code==='rate_limited'?'Too many requests — wait a moment and try again.':e&&e.code==='not_granted'?'Claude access was not granted for this page.':'Could not generate this time. Try again or rephrase the topic.'}</div>`;
+    }
+  };
+}
+
+/* ---------------- Session setup ---------------- */
+function setupDlg(mode){
+  const d=D(),tps=topics(d);
+  const isQ=mode==='quiz'||mode==='exam';
+  let opt={topic:'',n:mode==='exam'?10:mode==='quiz'?10:20,src:'mc',star:false,sec:90};
+  openModal(`<h2>${MODE_NAMES[mode]}</h2>
+    <p class="muted small" style="margin-top:-6px">${STRATS.find(s=>s.id===mode).why}</p>
+    <label class="f"><span>Topic</span><select id="sT"><option value="">All topics</option>${tps.map(t=>`<option>${esc(t)}</option>`).join('')}</select></label>
+    ${isQ?`<div class="f"><span style="display:block;font-size:13px;font-weight:600;margin-bottom:5px">Questions from</span><div class="seg" id="sSrc">
+      <button class="on" data-v="mc">Multiple choice</button><button data-v="both">MC + flashcards</button><button data-v="card">Flashcards as MC</button></div></div>`:''}
+    <div class="f"><span style="display:block;font-size:13px;font-weight:600;margin-bottom:5px">How many</span><div class="seg" id="sN">${[5,10,20,40,0].map(x=>`<button data-v="${x}" class="${x===opt.n?'on':''}">${x||'All'}</button>`).join('')}</div></div>
+    ${mode==='exam'?`<div class="f"><span style="display:block;font-size:13px;font-weight:600;margin-bottom:5px">Time per question</span><div class="seg" id="sSec">${[60,75,90,120].map(x=>`<button data-v="${x}" class="${x===90?'on':''}">${x}s</button>`).join('')}</div><div class="muted small" style="margin-top:4px">About 90 seconds per multiple-choice question is a common pacing target.</div></div>`:''}
+    <label class="check"><input type="checkbox" id="sStar"> <span>Starred only</span></label>
+    <div class="muted small" id="sAvail"></div>
+    <div class="foot"><button class="btn" data-act="close">Cancel</button><button class="btn primary" id="sGo">Start</button></div>`);
+  const segs=(id,cb)=>{const el=$(id);if(!el)return;el.onclick=e=>{const b=e.target.closest('button');if(!b)return;[...el.children].forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v);upd();};};
+  const upd=()=>{opt.topic=$('#sT').value;opt.star=$('#sStar').checked;const p=buildPool(mode,opt);$('#sAvail').textContent=`${p.length} available`;$('#sGo').disabled=!p.length;};
+  segs('#sSrc',v=>opt.src=v);segs('#sN',v=>opt.n=+v);segs('#sSec',v=>opt.sec=+v);
+  $('#sT').onchange=upd;$('#sStar').onchange=upd;upd();
+  $('#sGo').onclick=()=>{closeModal();startRun(mode,opt);};
+}
+function filt(arr,opt){return arr.filter(x=>(!opt.topic||x.t===opt.topic)&&(!opt.star||x.star));}
+function cardAsMc(c,all){
+  const others=shuffle(all.filter(o=>o.id!==c.id&&o.b!==c.b).map(o=>o.b));
+  const sameT=shuffle(all.filter(o=>o.id!==c.id&&o.t===c.t&&o.b!==c.b).map(o=>o.b));
+  const dis=[...new Set([...sameT,...others])].slice(0,3);
+  if(dis.length<3)return null;
+  const c4=shuffle([c.b,...dis]);
+  return {kind:'card',id:c.id,q:c.f,label:'Which matches this term?',c:c4,a:c4.indexOf(c.b),x:'',t:c.t};
+}
+function mcItem(m){const idx=shuffle(m.c.map((_,i)=>i));return {kind:'mc',id:m.id,q:m.q,c:idx.map(i=>m.c[i]),a:idx.indexOf(m.a),x:m.x,t:m.t};}
+function buildPool(mode,opt){
+  const d=D();
+  if(mode==='quiz'||mode==='exam'){
+    let out=[];
+    if(opt.src!=='card') out=out.concat(filt(d.mcqs,opt).map(mcItem));
+    if(opt.src!=='mc') out=out.concat(filt(d.cards,opt).map(c=>cardAsMc(c,d.cards)).filter(Boolean));
+    return out;
+  }
+  return filt(d.cards,opt);
+}
+
+/* ---------------- Runs ---------------- */
+function startRun(mode,opt={}){
+  const d=D();
+  let r={mode,i:0,score:0,t0:Date.now()};
+  if(mode==='flash'||mode==='write'){
+    let p=shuffle(buildPool(mode,opt));if(opt.n)p=p.slice(0,opt.n);
+    if(!p.length)return toast('No flashcards match.');
+    Object.assign(r,{items:p.map(c=>c.id),flip:false,know:[],learn:[]});
+  }else if(mode==='quiz'||mode==='exam'){
+    let p=shuffle(buildPool(mode,opt));if(opt.n)p=p.slice(0,opt.n);
+    if(!p.length)return toast('No questions match.');
+    Object.assign(r,{items:p,pick:null,done:false,results:[]});
+    if(mode==='exam'){r.ans=Array(p.length).fill(null);r.flags=[];r.end=Date.now()+p.length*opt.sec*1000;r.total=p.length*opt.sec;}
+  }else if(mode==='review'){
+    const q=[...shuffle(dueCards(d)),...shuffle(newCards(d)).slice(0,15)];
+    if(!q.length){toast('Nothing due — nice work. Try Weak spots or an exam sim.');return;}
+    Object.assign(r,{queue:q.map(c=>c.id),flip:false,seen:0,againN:0,tot:q.length});
+  }else if(mode==='match'){
+    const pool=shuffle(d.cards.filter(c=>c.b.length<=160&&c.f.length<=70)).slice(0,6);
+    if(pool.length<3)return toast('You need at least 3 short flashcards for Match.');
+    const tiles=shuffle(pool.flatMap(c=>[{k:c.id,txt:c.f,term:true},{k:c.id,txt:c.b,term:false}]));
+    Object.assign(r,{tiles,sel:null,gone:[],bad:null,pen:0});
+  }else if(mode==='weak'){
+    const w=weakItems(d);
+    const p=shuffle([...w.mcqs.map(mcItem),...w.cards.map(c=>cardAsMc(c,d.cards)).filter(Boolean)]).slice(0,20);
+    if(!p.length){toast('No weak spots yet — they appear after you miss something.');return;}
+    Object.assign(r,{mode:'quiz',weak:true,items:p,pick:null,done:false,results:[]});
+  }else if(mode==='teach'){
+    Object.assign(r,{topic:'',text:'',fb:'',stage:'pick'});
+  }
+  S.run=r;startTimer();render();window.scrollTo(0,0);
+}
+function endRun(){stopTimer();S.run=null;render();}
+function pushSession(m,s,n){const d=D();d.sessions.push({d:Date.now(),m,s,n});if(d.sessions.length>60)d.sessions=d.sessions.slice(-60);save();}
+function findItem(kind,id){const d=D();return kind==='mc'?d.mcqs.find(x=>x.id===id):d.cards.find(x=>x.id===id);}
+function record(kind,id,ok){const x=findItem(kind,id);if(!x)return;if(ok)x.ok++;else x.miss++;x.lr=ok?1:0;x.last=Date.now();logActivity();save();}
+function grade(c,g){const now=Date.now();
+  if(g===0){c.box=1;c.due=now;c.miss++;c.lr=0;}
+  else{if(g===1){c.box=Math.max(1,c.box);c.due=now+DAY;}else{c.box=Math.min(6,c.box+(g===3?2:1));c.due=now+INT[c.box]*DAY;}c.ok++;c.lr=1;}
+  c.last=now;logActivity();save();}
+
+let tick=null;
+function startTimer(){stopTimer();tick=setInterval(()=>{const r=S.run;if(!r)return;
+  if(r.mode==='exam'&&!r.done){const left=(r.end-Date.now())/1000;const el=$('#timer');if(el){el.textContent=fmt(left);el.classList.toggle('low',left<60);}if(left<=0)submitExam(true);}
+  if(r.mode==='match'&&!r.fin){const el=$('#timer');if(el)el.textContent=((Date.now()-r.t0)/1000+r.pen).toFixed(1)+'s';}
+},250);}
+function stopTimer(){clearInterval(tick);tick=null;}
+
+function runbar(cur,tot,extra=''){return `<div class="runbar"><button class="btn ghost sm" data-act="exit">✕ Exit</button><div class="prog"><i style="width:${pct(cur,tot)}%"></i></div><span class="small mono muted" style="font-family:var(--mono)">${cur}/${tot}</span>${extra}</div>`;}
+
+function renderRun(){
+  const r=S.run;
+  switch(r.mode){
+    case 'flash':return rFlash();case 'review':return rReview();case 'quiz':return rQuiz();
+    case 'exam':return rExam();case 'write':return rWrite();case 'match':return rMatch();case 'teach':return rTeach();
+  }
+}
+function face(front,back,flip,lblF='Term',lblB='Definition'){
+  return `<div class="flip ${flip?'on':''}" data-act="flip"><div class="flip-in">
+    <div class="face"><span class="lbl">${lblF}</span><div class="t">${esc(front)}</div><span class="hint">Tap to flip <span class="kbd hide-sm">space</span></span></div>
+    <div class="face back"><span class="lbl">${lblB}</span><div class="t">${esc(back)}</div></div></div></div>`;
+}
+function rFlash(){
+  const r=S.run;
+  if(r.i>=r.items.length){
+    return `${runbar(r.items.length,r.items.length)}<div class="result"><div class="eyebrow">Round complete</div><div class="score">${r.know.length}/${r.items.length}</div><p class="muted">${r.learn.length?`${r.learn.length} still learning — go again on just those.`:'You knew every card. 🎉'}</p>
+      <div class="row" style="justify-content:center">${r.learn.length?`<button class="btn primary" data-act="flashAgain">Study ${r.learn.length} again</button>`:''}<button class="btn" data-act="exit">Done</button></div></div>`;
+  }
+  const c=findItem('card',r.items[r.i]);if(!c){r.i++;return rFlash();}
+  return `${runbar(r.i,r.items.length)}
+    <div class="row between small muted"><span class="tag">${esc(c.t)}</span><button class="btn ghost sm star ${c.star?'on':''}" data-act="starRun" data-id="${c.id}">${c.star?'★ Starred':'☆ Star'}</button></div>
+    ${face(c.f,c.b,r.flip)}
+    <div class="big2"><button class="btn g-again" data-act="fl" data-v="0">✗ Still learning <span class="kbd hide-sm">←</span></button><button class="btn g-good" data-act="fl" data-v="1">✓ Got it <span class="kbd hide-sm">→</span></button></div>`;
+}
+function rReview(){
+  const r=S.run;
+  if(!r.queue.length){
+    return `${runbar(1,1)}<div class="result"><div class="eyebrow">Review done</div><div class="score">${r.seen}</div><p class="muted">cards reviewed${r.againN?` · ${r.againN} relearned`:''}. They'll come back on schedule.</p><button class="btn primary" data-act="exit">Done</button></div>`;
+  }
+  const c=findItem('card',r.queue[0]);if(!c){r.queue.shift();return rReview();}
+  const nextBox=g=>g===0?'now':g===1?'1d':INT[Math.min(6,c.box+(g===3?2:1))]+'d';
+  return `${runbar(r.tot-r.queue.length,r.tot,`<span class="badge">${c.box===0?'new':'lvl '+c.box}</span>`)}
+    ${face(c.f,c.b,r.flip,'Prompt','Answer')}
+    ${r.flip?`<div class="grades">
+      <button class="btn g-again" data-act="gr" data-v="0">Again<small>${nextBox(0)}</small></button>
+      <button class="btn" data-act="gr" data-v="1">Hard<small>${nextBox(1)}</small></button>
+      <button class="btn g-good" data-act="gr" data-v="2">Good<small>${nextBox(2)}</small></button>
+      <button class="btn" data-act="gr" data-v="3">Easy<small>${nextBox(3)}</small></button></div>
+      <div class="muted small" style="text-align:center;margin-top:8px">Keys 1–4</div>`
+    :`<button class="btn primary" style="width:100%;padding:13px" data-act="flip">Show answer</button>`}`;
+}
+function rQuiz(){
+  const r=S.run,n=r.items.length;
+  if(r.i>=n){
+    const missed=r.results.filter(x=>!x.ok);
+    return `${runbar(n,n)}<div class="result"><div class="eyebrow">${r.weak?'Weak spots drill':'Quiz'} complete</div><div class="score">${pct(r.score,n)}%</div><p class="muted">${r.score} of ${n} correct</p>
+      <div class="row" style="justify-content:center">${missed.length?`<button class="btn primary" data-act="retryMissed">Retry ${missed.length} missed</button>`:''}<button class="btn" data-act="exit">Done</button></div></div>
+      ${missed.length?`<h3 style="margin:10px 0">Review what you missed</h3>`+missed.map(m=>`<div class="panel" style="margin-bottom:10px"><div style="font-weight:500">${esc(m.it.q)}</div><div class="small" style="color:var(--bad);margin-top:6px">Your answer: ${esc(m.it.c[m.pick])}</div><div class="small" style="color:var(--ok)">Correct: ${esc(m.it.c[m.it.a])}</div>${m.it.x?`<div class="small muted" style="margin-top:6px">${esc(m.it.x)}</div>`:''}</div>`).join(''):''}`;
+  }
+  const it=r.items[r.i],done=r.pick!==null;
+  return `${runbar(r.i,n,`<span class="badge">${r.score} ✓</span>`)}
+    <div class="row"><span class="tag">${esc(it.t)}</span>${it.kind==='card'?`<span class="tag">${it.label}</span>`:''}</div>
+    <div class="qtext">${esc(it.q)}</div>
+    <div class="${done?'lock':''}">${it.c.map((c,i)=>{let cl='';if(done){if(i===it.a)cl='right';else if(i===r.pick)cl='wrong';}
+      return `<button class="opt ${cl}" data-act="pick" data-v="${i}"><span class="k">${'ABCDE'[i]}</span><span>${esc(c)}</span></button>`;}).join('')}</div>
+    ${done?`<div class="expl"><b style="color:${r.pick===it.a?'var(--ok)':'var(--bad)'}">${r.pick===it.a?'Correct.':'Not quite.'}</b> ${esc(it.x||(it.kind==='card'?'Answer: '+it.c[it.a]:''))}
+      ${S.sample&&r.pick!==it.a?`<div style="margin-top:8px"><button class="btn sm" data-act="explain">✦ Explain this more</button></div><div class="ai small" id="aiExp" style="margin-top:8px"></div>`:''}</div>
+      <button class="btn primary" style="width:100%;padding:13px" data-act="next">${r.i+1<n?'Next question':'See results'} <span class="kbd hide-sm" style="color:#fff;border-color:#fff6">enter</span></button>`:''}`;
+}
+function rExam(){
+  const r=S.run,n=r.items.length;
+  if(r.done){
+    const right=r.items.filter((it,i)=>r.ans[i]===it.a).length;
+    return `<div class="runbar"><button class="btn ghost sm" data-act="exit">✕ Exit</button></div>
+    <div class="result"><div class="eyebrow">Exam simulation results</div><div class="score">${pct(right,n)}%</div><p class="muted">${right} of ${n} correct · ${fmt(r.used)} used of ${fmt(r.total)}${r.timeout?' · time ran out':''}</p><button class="btn primary" data-act="exit">Done</button></div>
+    ${r.items.map((it,i)=>{const ok=r.ans[i]===it.a;return `<div class="panel" style="margin-bottom:10px;border-left:4px solid ${ok?'var(--ok)':'var(--bad)'}"><div class="small muted">Q${i+1} · ${esc(it.t)}</div><div style="font-weight:500">${esc(it.q)}</div>
+      ${!ok?`<div class="small" style="color:var(--bad);margin-top:6px">Your answer: ${r.ans[i]===null?'(blank)':esc(it.c[r.ans[i]])}</div>`:''}<div class="small" style="color:var(--ok)">Correct: ${esc(it.c[it.a])}</div>${it.x?`<div class="small muted" style="margin-top:6px">${esc(it.x)}</div>`:''}</div>`;}).join('')}`;
+  }
+  const it=r.items[r.i],answered=r.ans.filter(x=>x!==null).length;
+  return `<div class="runbar"><button class="btn ghost sm" data-act="exit">✕ Exit</button><div class="prog"><i style="width:${pct(answered,n)}%"></i></div><span class="timer" id="timer">${fmt((r.end-Date.now())/1000)}</span></div>
+    <div class="row between"><span class="small muted">Question ${r.i+1} of ${n}</span><button class="btn sm ${r.flags.includes(r.i)?'on':''}" data-act="flag">${r.flags.includes(r.i)?'⚑ Flagged':'⚐ Flag for review'}</button></div>
+    <div class="qtext">${esc(it.q)}</div>
+    ${it.c.map((c,i)=>`<button class="opt ${r.ans[r.i]===i?'sel':''}" data-act="epick" data-v="${i}"><span class="k">${'ABCDE'[i]}</span><span>${esc(c)}</span></button>`).join('')}
+    <div class="row between" style="margin-top:6px"><button class="btn" data-act="enav" data-v="-1" ${r.i===0?'disabled':''}>← Prev</button><button class="btn" data-act="enav" data-v="1" ${r.i===n-1?'disabled':''}>Next →</button></div>
+    <div class="navgrid">${r.items.map((_,i)=>`<button class="${r.ans[i]!==null?'ans':''} ${i===r.i?'cur':''} ${r.flags.includes(i)?'fl':''}" data-act="ejump" data-v="${i}">${i+1}</button>`).join('')}</div>
+    <button class="btn primary" style="width:100%;padding:13px" data-act="esubmit">Submit testlet (${answered}/${n} answered)</button>`;
+}
+function submitExam(timeout=false){
+  const r=S.run;if(r.done)return;r.done=true;r.timeout=timeout;r.used=Math.min(r.total,(Date.now()-r.t0)/1000);
+  let right=0;r.items.forEach((it,i)=>{const ok=r.ans[i]===it.a;if(ok)right++;const x=findItem(it.kind,it.id);if(x){ok?x.ok++:x.miss++;x.lr=ok?1:0;x.last=Date.now();}});
+  logActivity(r.items.length);pushSession('exam',right,r.items.length);stopTimer();render();window.scrollTo(0,0);
+}
+function rWrite(){
+  const r=S.run;
+  if(r.i>=r.items.length){
+    return `${runbar(1,1)}<div class="result"><div class="eyebrow">Active recall done</div><div class="score">${r.know.length}/${r.items.length}</div><p class="muted">recalled correctly</p><div class="row" style="justify-content:center">${r.learn.length?`<button class="btn primary" data-act="flashAgain">Redo ${r.learn.length} missed</button>`:''}<button class="btn" data-act="exit">Done</button></div></div>`;
+  }
+  const c=findItem('card',r.items[r.i]);if(!c){r.i++;return rWrite();}
+  return `${runbar(r.i,r.items.length)}
+    <div class="row"><span class="tag">${esc(c.t)}</span></div>
+    <div class="qtext">${esc(c.f)}</div>
+    <textarea id="recall" placeholder="Write the answer from memory — key terms, the rule, an example…" ${r.revealed?'readonly':''}>${esc(r.typed||'')}</textarea>
+    ${r.revealed?`<div class="expl"><div class="eyebrow" style="margin-bottom:4px">Answer</div><div style="white-space:pre-wrap">${esc(c.b)}</div></div>
+      <div class="small muted" style="margin-bottom:8px">How did you do?</div>
+      <div class="grid" style="grid-template-columns:1fr 1fr 1fr;gap:8px"><button class="btn g-again" data-act="wr" data-v="0">Missed it</button><button class="btn" data-act="wr" data-v="1">Partly</button><button class="btn g-good" data-act="wr" data-v="2">Nailed it</button></div>`
+    :`<button class="btn primary" style="width:100%;padding:13px;margin-top:10px" data-act="reveal">Check answer</button>`}`;
+}
+function rMatch(){
+  const r=S.run;
+  if(r.fin){const best=D().matchBest;return `${runbar(1,1)}<div class="result"><div class="eyebrow">Matched!</div><div class="score">${r.time.toFixed(1)}s</div><p class="muted">${r.newBest?'New personal best 🎉':best?`Best: ${best.toFixed(1)}s`:''}${r.pen?` · includes ${r.pen}s in mismatch penalties`:''}</p><div class="row" style="justify-content:center"><button class="btn primary" data-act="matchAgain">Play again</button><button class="btn" data-act="exit">Done</button></div></div>`;}
+  return `<div class="runbar"><button class="btn ghost sm" data-act="exit">✕ Exit</button><span class="spacer"></span><span class="small muted">Tap a term, then its match · +1s per miss</span><span class="timer" id="timer">0.0s</span></div>
+    <div class="match">${r.tiles.map((t,i)=>`<button class="mt ${t.term?'term':''} ${r.sel===i?'sel':''} ${r.gone.includes(i)?'gone':''} ${r.bad&&r.bad.includes(i)?'bad':''}" data-act="mt" data-v="${i}">${esc(t.txt)}</button>`).join('')}</div>`;
+}
+function rTeach(){
+  const r=S.run,d=D();
+  if(r.stage==='pick'){
+    return `<div class="runbar"><button class="btn ghost sm" data-act="exit">✕ Exit</button></div>
+    <div class="eyebrow">Teach it back</div><h2 style="margin:4px 0 8px">Pick a topic to explain</h2>
+    <p class="muted small">Pretend you're explaining it to a new staff accountant. Use plain words, give an example, and note the exceptions. Where you get stuck is what to study next.</p>
+    <div class="seg" style="margin:12px 0">${topics(d).map(t=>`<button data-act="tpick" data-v="${esc(t)}">${esc(t)}</button>`).join('')}</div>
+    <div class="row"><input type="text" id="tCustom" placeholder="…or type any topic" style="flex:1"><button class="btn primary" data-act="tcustom">Go</button></div>`;
+  }
+  return `<div class="runbar"><button class="btn ghost sm" data-act="exit">✕ Exit</button></div>
+    <div class="eyebrow">Teach it back</div><h2 style="margin:4px 0 10px">${esc(r.topic)}</h2>
+    <textarea id="tText" style="min-height:200px" placeholder="Explain ${esc(r.topic)} in your own words…">${esc(r.text)}</textarea>
+    <div class="panel" style="margin-top:10px"><b class="small">Self-check</b>
+      ${['I defined the key terms without jargon','I gave a concrete example (with numbers if it applies)','I explained WHY the rule works, not just what it is','I mentioned exceptions or common exam traps','I could answer a follow-up question about it'].map(x=>`<label class="check small"><input type="checkbox"><span>${x}</span></label>`).join('')}</div>
+    ${r.fb?`<div class="expl ai" id="tFb">${esc(r.fb)}</div>`:'<div id="tFb"></div>'}
+    <div class="row" style="margin-top:10px">${S.sample?`<button class="btn" data-act="tfb">✦ Get feedback from Claude</button>`:''}<span class="spacer"></span><button class="btn primary" data-act="tsave">Save & finish</button></div>`;
+}
+
+/* ---------------- Events ---------------- */
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const a=b.dataset.act,r=S.run,d=S.sec?D():null;
+  switch(a){
+    case 'home': if(S.run)stopTimer(); S.run=null;S.sec=null;history.replaceState(null,'',location.pathname+location.search);applySecTheme();render();window.scrollTo(0,0);break;
+    case 'open': S.sec=b.dataset.sec;S.tab='study';S.q='';S.filter='all';location.hash=S.sec.toLowerCase();applySecTheme();render();window.scrollTo(0,0);break;
+    case 'tab': S.tab=b.dataset.tab;render();break;
+    case 'filter': S.filter=b.dataset.f;render();break;
+    case 'close': closeModal();break;
+    case 'addCard': editCard(null);break;
+    case 'addMcq': editMcq(null);break;
+    case 'import': importDlg();break;
+    case 'export': exportDlg();break;
+    case 'gen': genDlg();break;
+    case 'star': {const x=findItem(b.dataset.k,b.dataset.id);x.star=!x.star;save();$('#list').innerHTML=renderList();break;}
+    case 'edit': {const x=findItem(b.dataset.k,b.dataset.id);b.dataset.k==='card'?editCard(x):editMcq(x);break;}
+    case 'del': {if(await confirmBox('This item and its progress will be removed.')){const k=b.dataset.k==='card'?'cards':'mcqs';d[k]=d[k].filter(x=>x.id!==b.dataset.id);save();render();}break;}
+    case 'resetSched': if(await confirmBox('All cards in this section go back to "new" and their history is cleared.','Reset')){d.cards.forEach(c=>{c.box=0;c.due=0;c.ok=0;c.miss=0;c.lr=null;});d.mcqs.forEach(m=>{m.ok=0;m.miss=0;m.lr=null;});save();render();}break;
+    case 'start': {const m=b.dataset.mode;if(['flash','quiz','exam','write'].includes(m))setupDlg(m);else startRun(m);break;}
+    case 'exit': if(r&&r.mode==='exam'&&!r.done){if(!(await confirmBox('Leave the exam? Your answers will not be scored.','Leave')))break;}endRun();break;
+    case 'pomo': pomoDlg();break;
+    // flashcards & review
+    case 'flip': r.flip=!r.flip;render();break;
+    case 'starRun': {const c=findItem('card',b.dataset.id);c.star=!c.star;save();render();break;}
+    case 'fl': flashAnswer(+b.dataset.v);break;
+    case 'flashAgain': {const ids=r.learn.slice();Object.assign(r,{items:shuffle(ids),i:0,know:[],learn:[],flip:false,revealed:false,typed:''});render();break;}
+    case 'gr': reviewGrade(+b.dataset.v);break;
+    // quiz
+    case 'pick': quizPick(+b.dataset.v);break;
+    case 'next': r.i++;r.pick=null;render();window.scrollTo(0,0);break;
+    case 'retryMissed': {const items=shuffle(r.results.filter(x=>!x.ok).map(x=>x.it));Object.assign(r,{items,i:0,score:0,pick:null,results:[]});render();break;}
+    case 'explain': explainMore();break;
+    // exam
+    case 'epick': r.ans[r.i]=+b.dataset.v;render();break;
+    case 'enav': r.i=Math.max(0,Math.min(r.items.length-1,r.i+(+b.dataset.v)));render();break;
+    case 'ejump': r.i=+b.dataset.v;render();break;
+    case 'flag': r.flags.includes(r.i)?r.flags.splice(r.flags.indexOf(r.i),1):r.flags.push(r.i);render();break;
+    case 'esubmit': {const un=r.ans.filter(x=>x===null).length;if(un&&!(await confirmBox(`${un} question${un>1?'s are':' is'} unanswered. Submit anyway?`,'Submit')))break;submitExam();break;}
+    // write
+    case 'reveal': r.typed=$('#recall').value;r.revealed=true;render();break;
+    case 'wr': {const c=findItem('card',r.items[r.i]);const v=+b.dataset.v;grade(c,v===0?0:v===1?1:2);(v===2?r.know:r.learn).push(c.id);r.i++;r.revealed=false;r.typed='';if(r.i>=r.items.length)pushSession('write',r.know.length,r.items.length);render();break;}
+    // match
+    case 'mt': matchTap(+b.dataset.v);break;
+    case 'matchAgain': startRun('match');break;
+    // teach
+    case 'tpick': r.topic=b.dataset.v;r.stage='write';render();break;
+    case 'tcustom': {const v=$('#tCustom').value.trim();if(!v)return toast('Type a topic.');r.topic=v;r.stage='write';render();break;}
+    case 'tfb': teachFeedback(b);break;
+    case 'tsave': {r.text=$('#tText').value.trim();if(!r.text)return toast('Write your explanation first.');d.notes.push({id:uid(),topic:r.topic,text:r.text,fb:r.fb||'',d:Date.now()});if(d.notes.length>40)d.notes=d.notes.slice(-40);logActivity();save();toast('Saved to Progress → Teach-back notes');endRun();break;}
+  }
+});
+function flashAnswer(v){const r=S.run;if(r.i>=r.items.length)return;const id=r.items[r.i];record('card',id,!!v);(v?r.know:r.learn).push(id);r.i++;r.flip=false;if(r.i>=r.items.length)pushSession('flash',r.know.length,r.items.length);render();}
+function reviewGrade(g){const r=S.run;const id=r.queue.shift();const c=findItem('card',id);if(c){grade(c,g);r.seen++;if(g===0){r.againN++;r.queue.splice(Math.min(r.queue.length,3),0,id);}}r.flip=false;if(!r.queue.length)pushSession('review',r.seen,0+r.seen);render();}
+function quizPick(v){const r=S.run;if(r.pick!==null)return;r.pick=v;const it=r.items[r.i],ok=v===it.a;if(ok)r.score++;r.results.push({it,pick:v,ok});record(it.kind,it.id,ok);if(r.i+1>=r.items.length)pushSession(r.weak?'weak':'quiz',r.score,r.items.length);render();}
+function matchTap(i){const r=S.run;if(r.gone.includes(i)||r.fin)return;r.bad=null;
+  if(r.sel===null){r.sel=i;}
+  else if(r.sel===i){r.sel=null;}
+  else{const A=r.tiles[r.sel],B=r.tiles[i];
+    if(A.k===B.k&&A.term!==B.term){r.gone.push(r.sel,i);record('card',A.k,true);}
+    else{r.bad=[r.sel,i];r.pen++;}
+    r.sel=null;
+    if(r.gone.length===r.tiles.length){r.fin=true;r.time=(Date.now()-r.t0)/1000+r.pen;const d=D();r.newBest=!d.matchBest||r.time<d.matchBest;if(r.newBest)d.matchBest=r.time;pushSession('match',Math.round(r.time),0);}}
+  render();}
+async function explainMore(){
+  const r=S.run,it=r.items[r.i],el=$('#aiExp');if(!el)return;el.textContent='Thinking…';
+  const prompt=`You are a CPA exam tutor for the ${S.sec} (${SECTIONS[S.sec].name}) section. A student answered this question wrong.
+Question: ${it.q}
+Choices: ${it.c.map((c,i)=>'ABCDE'[i]+') '+c).join(' | ')}
+Correct answer: ${'ABCDE'[it.a]}) ${it.c[it.a]}
+Student chose: ${'ABCDE'[r.pick]}) ${it.c[r.pick]}
+In under 150 words of plain text: explain the underlying rule, why their choice is wrong, and give one memory tip.`;
+  try{const res=await S.sample(prompt,{modelTier:'quick',onText:({text})=>{const e2=$('#aiExp');if(e2)e2.textContent=text;}});const e2=$('#aiExp');if(e2)e2.textContent=res.text;}
+  catch(e){const e2=$('#aiExp');if(e2)e2.textContent=e&&e.code==='rate_limited'?'Too many requests — try again shortly.':'Could not get an explanation right now.';}
+}
+async function teachFeedback(btn){
+  const r=S.run;r.text=$('#tText').value.trim();if(r.text.length<40)return toast('Write a bit more first.');
+  btn.disabled=true;const out=$('#tFb');out.className='expl ai';out.textContent='Reading your explanation…';
+  const prompt=`You are a supportive but rigorous CPA exam tutor for the ${S.sec} (${SECTIONS[S.sec].name}) section.
+The student explained the topic "${r.topic}" in their own words:
+"""${r.text}"""
+Give feedback in plain text (no markdown symbols), under 230 words, with these short labeled parts:
+Accurate: what they got right.
+Fix: any technical errors or misconceptions, corrected.
+Missing: key points or exam traps they left out.
+Test yourself: 3 quick questions to check understanding (no answers).`;
+  try{const res=await S.sample(prompt,{modelTier:'default',onText:({text})=>{out.textContent=text;}});r.fb=res.text;out.textContent=res.text;}
+  catch(e){out.textContent=e&&e.code==='rate_limited'?'Too many requests — try again shortly.':'Could not get feedback right now.';}
+  btn.disabled=false;
+}
+
+/* keyboard */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&$('#modal').classList.contains('open')){closeModal();return;}
+  const tg=e.target.tagName;if(tg==='INPUT'||tg==='TEXTAREA'||tg==='SELECT'||$('#modal').classList.contains('open'))return;
+  const r=S.run;if(!r)return;
+  if(r.mode==='flash'&&r.i<r.items.length){if(e.key===' '){e.preventDefault();r.flip=!r.flip;render();}else if(e.key==='ArrowRight')flashAnswer(1);else if(e.key==='ArrowLeft')flashAnswer(0);}
+  else if(r.mode==='review'&&r.queue.length){if(e.key===' '){e.preventDefault();r.flip=!r.flip;render();}else if(r.flip&&'1234'.includes(e.key))reviewGrade(+e.key-1);}
+  else if(r.mode==='quiz'&&r.i<r.items.length){const k=e.key.toLowerCase();const idx='abcde'.indexOf(k)>=0?'abcde'.indexOf(k):'12345'.indexOf(k);
+    if(r.pick===null&&idx>=0&&idx<r.items[r.i].c.length)quizPick(idx);else if(r.pick!==null&&e.key==='Enter'){r.i++;r.pick=null;render();}}
+  else if(r.mode==='exam'&&!r.done){const idx='abcde'.indexOf(e.key.toLowerCase());if(idx>=0&&idx<r.items[r.i].c.length){r.ans[r.i]=idx;render();}else if(e.key==='ArrowRight'&&r.i<r.items.length-1){r.i++;render();}else if(e.key==='ArrowLeft'&&r.i>0){r.i--;render();}}
+});
+
+/* ---------------- Pomodoro focus timer ---------------- */
+const P={phase:'focus',len:{focus:25,brk:5},left:25*60,on:false,int:null,ctx:null};
+function pomoChip(){const c=$('#pomoChip');c.textContent=(P.phase==='focus'?'◷ ':'☕ ')+fmt(P.left);c.classList.toggle('run',P.on);}
+function pomoTick(){P.left--;if(P.left<=0){beep();if(P.phase==='focus'){S.prefs.pomos=(S.prefs.pomos||0)+1;savePrefs();toast('Focus session done — take a 5-minute break.');P.phase='brk';}else{toast('Break over — back to it.');P.phase='focus';}P.left=P.len[P.phase]*60;}pomoChip();const t=$('#pomoBig');if(t)t.textContent=fmt(P.left);}
+function beep(){try{const c=P.ctx;if(!c)return;[0,.25,.5].forEach(t=>{const o=c.createOscillator(),g=c.createGain();o.frequency.value=880;g.gain.setValueAtTime(.18,c.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+t+.2);o.connect(g).connect(c.destination);o.start(c.currentTime+t);o.stop(c.currentTime+t+.22);});}catch(e){}}
+function pomoDlg(){
+  const draw=()=>{openModal(`<h2>Focus timer</h2><p class="muted small" style="margin-top:-6px">The Pomodoro technique: 25 minutes of focused study, then a 5-minute break. Short, timed blocks beat long, distracted ones.</p>
+    <div style="text-align:center;margin:18px 0"><div class="eyebrow">${P.phase==='focus'?'Focus':'Break'}</div><div id="pomoBig" style="font-family:var(--mono);font-size:56px;font-weight:600">${fmt(P.left)}</div></div>
+    <div class="row" style="justify-content:center;margin-bottom:12px"><span class="small muted">Focus</span><div class="seg" id="pF">${[15,25,45,50].map(x=>`<button data-v="${x}" class="${P.len.focus===x?'on':''}">${x}m</button>`).join('')}</div></div>
+    <div class="foot" style="justify-content:center"><button class="btn" id="pReset">Reset</button><button class="btn primary" id="pGo">${P.on?'Pause':'Start'}</button></div>`);
+    $('#pGo').onclick=()=>{try{if(!P.ctx)P.ctx=new (window.AudioContext||window.webkitAudioContext)();else P.ctx.resume();}catch(e){}
+      if(P.on){clearInterval(P.int);P.on=false;}else{P.int=setInterval(pomoTick,1000);P.on=true;}pomoChip();draw();};
+    $('#pReset').onclick=()=>{clearInterval(P.int);P.on=false;P.phase='focus';P.left=P.len.focus*60;pomoChip();draw();};
+    $('#pF').onclick=e=>{const b=e.target.closest('button');if(!b)return;P.len.focus=+b.dataset.v;if(!P.on&&P.phase==='focus')P.left=P.len.focus*60;pomoChip();draw();};
+  };draw();
+}
+</script>
+</body>
+</html>
