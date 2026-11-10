@@ -523,6 +523,7 @@ function renderCards(){
       <button class="btn primary sm" data-act="addCard">+ Flashcard</button>
       <button class="btn primary sm" data-act="addMcq">+ Multiple choice</button>
       <button class="btn sm" data-act="import">Import</button>
+      ${S.sampleImages?`<button class="btn sm" data-act="genPage">📷 Questions from a page</button>`:''}
       ${S.sample?`<button class="btn sm" data-act="gen">✦ Generate with Claude</button>`:''}
       <span class="spacer"></span>
       <button class="btn ghost sm" data-act="export">Copy as text</button>
@@ -745,38 +746,62 @@ function exportDlg(){
 }
 
 /* ---------- Generate with Claude ---------- */
-function genDlg(){
-  let kind='card',n=8;
+function genDlg(startSrc){
+  let kind=startSrc==='page'?'mc':'card',n=startSrc==='page'?5:8,src=(startSrc==='page'&&S.sampleImages)?'page':'topic',imgs=[];
+  const ph=S.sec==='FAR'?'Lease accounting for lessees':S.sec==='AUD'?'Audit sampling':S.sec==='REG'?'Partnership basis':'Variance analysis';
   openModal(`<h2>✦ Generate with Claude</h2>
-    <label class="f"><span>Topic</span><input type="text" id="gT" autofocus placeholder="e.g. ${S.sec==='FAR'?'Lease accounting for lessees':S.sec==='AUD'?'Audit sampling':S.sec==='REG'?'Partnership basis':'Variance analysis'}" list="tlist"><datalist id="tlist">${topics(D()).map(x=>`<option value="${esc(x)}">`).join('')}</datalist></label>
-    <div class="row" style="margin-bottom:10px"><div class="seg" id="gK"><button class="on" data-v="card">Flashcards</button><button data-v="mc">Multiple choice</button></div>
-    <div class="seg" id="gN">${[5,8,12].map(x=>`<button data-v="${x}" class="${x===8?'on':''}">${x}</button>`).join('')}</div></div>
+    ${S.sampleImages?`<div class="seg" id="gS" style="margin:-4px 0 14px"><button data-v="topic" class="${src==='topic'?'on':''}">From a topic</button><button data-v="page" class="${src==='page'?'on':''}">📷 From a page screenshot</button></div>`:''}
+    <div id="gTopicBox" ${src==='page'?'hidden':''}><label class="f"><span>Topic</span><input type="text" id="gT" placeholder="e.g. ${ph}" list="tlist"><datalist id="tlist">${topics(D()).map(x=>`<option value="${esc(x)}">`).join('')}</datalist></label></div>
+    <div id="gPageBox" ${src==='page'?'':'hidden'}>
+      <div class="shot" style="flex-wrap:wrap"><button type="button" class="btn sm" id="gPick">📷 Add page screenshot</button><span class="muted small">Up to 3 pages${'ontouchstart' in window?'':' · or paste an image'}</span><input type="file" id="gIn" accept="image/*" multiple hidden></div>
+      <div id="gThumbs" class="row" style="margin:-4px 0 10px"></div>
+      <label class="f"><span>Focus (optional)</span><input type="text" id="gFocus" placeholder="e.g. only the exceptions, or the journal entries"></label>
+    </div>
+    <div class="row" style="margin-bottom:10px"><div class="seg" id="gK"><button class="${kind==='card'?'on':''}" data-v="card">Flashcards</button><button class="${kind==='mc'?'on':''}" data-v="mc">Multiple choice</button></div>
+    <div class="seg" id="gN">${[3,5,8,12].map(x=>`<button data-v="${x}" class="${x===n?'on':''}">${x}</button>`).join('')}</div></div>
     <div id="gOut"></div>
     <div class="foot"><button class="btn" data-act="close">Cancel</button><button class="btn primary" id="gGo">Generate</button></div>`);
-  const segs=(id,cb)=>$(id).onclick=e=>{const b=e.target.closest('button');if(!b)return;[...$(id).children].forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v);};
+  const segs=(id,cb)=>{const el=$(id);if(el)el.onclick=e=>{const b=e.target.closest('button');if(!b)return;[...el.children].forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v);};};
   segs('#gK',v=>kind=v);segs('#gN',v=>n=+v);
+  segs('#gS',v=>{src=v;$('#gTopicBox').hidden=v==='page';$('#gPageBox').hidden=v!=='page';});
+  const thumbs=()=>{$('#gThumbs').innerHTML=imgs.map((b,i)=>`<span style="position:relative"><img src="${URL.createObjectURL(b)}" style="height:64px;border-radius:8px;border:1px solid var(--line)"><button type="button" class="btn sm" data-rm="${i}" style="position:absolute;top:-8px;right:-8px;padding:0 6px;border-radius:99px">✕</button></span>`).join('');};
+  $('#gThumbs').onclick=e=>{const b=e.target.closest('[data-rm]');if(b){imgs.splice(+b.dataset.rm,1);thumbs();}};
+  const addFiles=async fs=>{for(const f of fs){if(imgs.length>=3){toast('Up to 3 pages at a time.');break;}imgs.push(await shrink(f));}thumbs();};
+  if($('#gPick')){$('#gPick').onclick=()=>$('#gIn').click();$('#gIn').onchange=e=>{addFiles([...e.target.files]);e.target.value='';};}
+  $('#sheet').onpaste=e=>{if(src!=='page')return;const fs=[...(e.clipboardData?.items||[])].filter(i=>i.type.startsWith('image/')).map(i=>i.getAsFile());if(fs.length){e.preventDefault();addFiles(fs);}};
+  if(src==='topic')setTimeout(()=>$('#gT')&&$('#gT').focus(),60);
   $('#gGo').onclick=async()=>{
-    const topic=$('#gT').value.trim();if(!topic){toast('Enter a topic.');return;}
-    const btn=$('#gGo');btn.disabled=true;btn.textContent='Generating…';$('#gOut').innerHTML='<div class="muted small">Writing questions…</div>';
-    const shape=kind==='card'?'{"items":[{"front":"term or question","back":"concise answer, max 45 words"}]}':'{"items":[{"question":"exam-style stem","choices":["A","B","C","D"],"answer":0,"explanation":"why the answer is right and the others wrong, max 50 words"}]}';
-    const prompt=`You are an expert CPA exam tutor writing study material for the ${S.sec} (${SECTIONS[S.sec].name}) section of the current CPA exam blueprint.
-Write ${n} ${kind==='card'?'flashcards':'multiple-choice questions with exactly 4 choices'} on the topic: "${topic}".
+    const fromPage=src==='page';
+    const topic=fromPage?'':$('#gT').value.trim();
+    if(!fromPage&&!topic){toast('Enter a topic.');return;}
+    if(fromPage&&!imgs.length){toast('Add a screenshot of the page first.');return;}
+    const btn=$('#gGo');btn.disabled=true;btn.textContent='Generating…';$('#gOut').innerHTML=`<div class="muted small">${fromPage?'Reading your page and writing questions…':'Writing questions…'}</div>`;
+    const shape=kind==='card'?'{"items":[{"front":"term or question","back":"concise answer, max 45 words","topic":"2-4 word topic"}]}':'{"items":[{"question":"exam-style stem","choices":["A","B","C","D"],"answer":0,"explanation":"why the answer is right and the others wrong, max 50 words","topic":"2-4 word topic"}]}';
+    const what=kind==='card'?'flashcards':'multiple-choice questions with exactly 4 choices';
+    const prompt=fromPage
+?`You are an expert CPA exam tutor for the ${S.sec} (${SECTIONS[S.sec].name}) section. The attached image${imgs.length>1?'s are':' is a'} screenshot${imgs.length>1?'s':''} of a textbook or review-course page the student marked as important.
+Write ${n} ${what} that test the key rules, definitions, exceptions, calculations and distinctions IN THIS PASSAGE. Base every item on the passage's content; do not test material it doesn't cover. Write them in your own words — don't copy long sentences from the page.${kind==='mc'?' Prefer applied, exam-style scenarios (with numbers where the passage has calculations) over pure recall. Make the wrong choices plausible common mistakes. In each explanation, point to the idea in the passage that gives the answer. "answer" is the 0-based index of the correct choice; vary its position.':''}
+${$('#gFocus').value.trim()?'The student wants to focus on: '+$('#gFocus').value.trim()+'\n':''}If the image has no readable study content, return {"items":[]}.
+Return ONLY JSON in this exact shape, no other text: ${shape}`
+:`You are an expert CPA exam tutor writing study material for the ${S.sec} (${SECTIONS[S.sec].name}) section of the current CPA exam blueprint.
+Write ${n} ${what} on the topic: "${topic}".
 Be technically accurate under current US GAAP / AICPA / PCAOB / IRC rules as relevant. Avoid year-specific dollar thresholds unless essential. Vary difficulty; use realistic exam-style scenarios and numbers for questions. "answer" is the 0-based index of the correct choice; vary its position.
 Return ONLY JSON in this exact shape, no other text: ${shape}`;
+    const opts={modelTier:'default'};if(fromPage)opts.images=imgs;
     try{
       let val;
-      try{val=await S.sample.json(prompt,{modelTier:'default'});}
-      catch(e){if(e&&e.code==='not_granted')throw e;const r=await S.sample(prompt,{modelTier:'default'});val=JSON.parse(r.text.slice(r.text.indexOf('{'),r.text.lastIndexOf('}')+1));}
+      try{val=await S.sample.json(prompt,opts);}
+      catch(e){if(e&&(e.code==='not_granted'||e.code==='rate_limited'))throw e;const r=await S.sample(prompt,opts);val=JSON.parse(r.text.slice(r.text.indexOf('{'),r.text.lastIndexOf('}')+1));}
       const items=(val&&val.items||[]).filter(it=>kind==='card'?(it.front&&it.back):(it.question&&Array.isArray(it.choices)&&it.choices.length>=2&&Number.isInteger(it.answer)&&it.choices[it.answer]));
-      if(!items.length)throw {message:'empty'};
-      $('#gOut').innerHTML=`<div class="small muted" style="margin-bottom:6px">Untick any you don't want. AI can make mistakes — check anything surprising against your review course.</div>`+items.map((it,i)=>`<label class="check"><input type="checkbox" checked data-i="${i}"><span><b>${esc(kind==='card'?it.front:it.question)}</b><br><span class="muted small">${esc(kind==='card'?it.back:'✓ '+it.choices[it.answer])}</span></span></label>`).join('');
+      if(!items.length)throw {message:fromPage?'nopage':'empty'};
+      $('#gOut').innerHTML=`<div class="small muted" style="margin-bottom:6px">Untick any you don't want. AI can make mistakes — check anything surprising against your materials.</div>`+items.map((it,i)=>`<label class="check"><input type="checkbox" checked data-i="${i}"><span><b>${esc(kind==='card'?it.front:it.question)}</b><br><span class="muted small">${esc(kind==='card'?it.back:'✓ '+it.choices[it.answer])}</span></span></label>`).join('');
       btn.disabled=false;btn.textContent=`Add selected`;
       btn.onclick=()=>{const keep=[...document.querySelectorAll('#gOut input:checked')].map(x=>items[+x.dataset.i]);
-        keep.forEach(it=>{if(kind==='card')D().cards.unshift(newCard(String(it.front),String(it.back),topic,'ai'));else D().mcqs.unshift(newMcq(String(it.question),it.choices.map(String),it.answer,String(it.explanation||''),topic,'ai'));});
+        keep.forEach(it=>{const t=topic||String(it.topic||'From my notes');if(kind==='card')D().cards.unshift(newCard(String(it.front),String(it.back),t,'ai'));else D().mcqs.unshift(newMcq(String(it.question),it.choices.map(String),it.answer,String(it.explanation||''),t,'ai'));});
         save();closeModal();render();toast(`Added ${keep.length}`);};
     }catch(e){
       btn.disabled=false;btn.textContent='Try again';
-      $('#gOut').innerHTML=`<div class="small" style="color:var(--bad)">${e&&e.code==='rate_limited'?'Too many requests — wait a moment and try again.':e&&e.code==='not_granted'?'Claude access was not granted for this page.':'Could not generate this time. Try again or rephrase the topic.'}</div>`;
+      $('#gOut').innerHTML=`<div class="small" style="color:var(--bad)">${e&&e.code==='rate_limited'?'Too many requests — wait a moment and try again.':e&&e.code==='not_granted'?'Claude access was not granted for this page.':e&&e.message==='nopage'?'Couldn\'t find study content in that image. Try a clearer, closer screenshot of the text.':'Could not generate this time. Try again.'}</div>`;
     }
   };
 }
@@ -1009,6 +1034,7 @@ document.addEventListener('click',async e=>{
     case 'import': importDlg();break;
     case 'export': exportDlg();break;
     case 'gen': genDlg();break;
+    case 'genPage': genDlg('page');break;
     case 'star': {const x=findItem(b.dataset.k,b.dataset.id);x.star=!x.star;save();$('#list').innerHTML=renderList();break;}
     case 'edit': {const x=findItem(b.dataset.k,b.dataset.id);b.dataset.k==='card'?editCard(x):editMcq(x);break;}
     case 'del': {if(await confirmBox('This item and its progress will be removed.')){const k=b.dataset.k==='card'?'cards':'mcqs';d[k]=d[k].filter(x=>x.id!==b.dataset.id);save();render();}break;}

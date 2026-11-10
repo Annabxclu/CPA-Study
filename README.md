@@ -12,7 +12,7 @@ A single-page study app for the CPA exam, organized by section — **AUD, FAR, R
 - **Weak spots**: drills only what you've missed
 - **Teach it back**: Feynman-style explanation with a self-check list
 
-Also: **fill from screenshot** (snap a question or card and the form fills itself in), create/edit flashcards and MC questions, import from Quizlet (tab-separated export), copy cards out as text, per-topic accuracy, streaks, and a Pomodoro focus timer.
+Also: **questions from a page** (screenshot up to 3 textbook pages and Claude writes MC questions or flashcards from them; claude.ai version only), **fill from screenshot** (snap a question or card and the form fills itself in), create/edit flashcards and MC questions, import from Quizlet (tab-separated export), copy cards out as text, per-topic accuracy, streaks, and a Pomodoro focus timer.
 
 ## Running it
 Open `index.html` in a browser, or enable GitHub Pages for this repo. Opened this way, progress is saved in your browser's local storage. On GitHub Pages, "Fill from screenshot" reads the text with on-device OCR (Tesseract.js) and you pick the correct answer; on claude.ai, Claude reads the image and also detects or works out the answer. The "Generate with Claude", "Explain this more" and teach-back feedback features, plus saving to your account, only work in the hosted claude.ai version.
